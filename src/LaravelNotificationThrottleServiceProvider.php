@@ -2,6 +2,7 @@
 
 namespace Jamesmills\LaravelNotificationThrottle;
 
+use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelNotificationThrottleServiceProvider extends ServiceProvider
@@ -49,6 +50,10 @@ class LaravelNotificationThrottleServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->singleton(ChannelManager::class, function ($app) {
+            return new RateLimitDispatcher($app);
+        });
+
         // Automatically apply the package configuration
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'laravel-notification-throttle');
 
