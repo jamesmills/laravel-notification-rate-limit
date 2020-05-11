@@ -1,18 +1,18 @@
 <?php
 
-namespace Jamesmills\LaravelNotificationThrottle\Tests;
+namespace Jamesmills\LaravelNotificationRateLimit\Tests;
 
 use Orchestra\Testbench\TestCase;
-use Jamesmills\LaravelNotificationThrottle\LaravelNotificationThrottleServiceProvider;
+use Jamesmills\LaravelNotificationRateLimit\LaravelNotificationRateLimitServiceProvider;
 
 class ExampleTest extends TestCase
 {
 
     protected function getPackageProviders($app)
     {
-        return [LaravelNotificationThrottleServiceProvider::class];
+        return [LaravelNotificationRateLimitServiceProvider::class];
     }
-    
+
     /** @test */
     public function true_is_true()
     {

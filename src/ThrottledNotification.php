@@ -1,6 +1,6 @@
 <?php
 
-namespace Jamesmills\LaravelNotificationThrottle;
+namespace Jamesmills\LaravelNotificationRateLimit;
 
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Notifications\Notification;

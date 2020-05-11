@@ -1,6 +1,6 @@
 <?php
 
-namespace Jamesmills\LaravelNotificationThrottle\Events;
+namespace Jamesmills\LaravelNotificationRateLimit\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;

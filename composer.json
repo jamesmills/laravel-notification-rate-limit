@@ -25,12 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Jamesmills\\LaravelNotificationThrottle\\": "src"
+            "Jamesmills\\LaravelNotificationRateLimit\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Jamesmills\\LaravelNotificationThrottle\\Tests\\": "tests"
+            "Jamesmills\\LaravelNotificationRateLimit\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -44,10 +44,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Jamesmills\\LaravelNotificationThrottle\\LaravelNotificationThrottleServiceProvider"
+                "Jamesmills\\LaravelNotificationRateLimit\\LaravelNotificationThrottleServiceProvider"
             ],
             "aliases": {
-                "LaravelNotificationThrottle": "Jamesmills\\LaravelNotificationThrottle\\LaravelNotificationThrottleFacade"
+                "LaravelNotificationThrottle": "Jamesmills\\LaravelNotificationRateLimit\\LaravelNotificationThrottleFacade"
             }
         }
     }

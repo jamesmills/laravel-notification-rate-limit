@@ -1,11 +1,11 @@
 <?php
 
-namespace Jamesmills\LaravelNotificationThrottle;
+namespace Jamesmills\LaravelNotificationRateLimit;
 
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\ServiceProvider;
 
-class LaravelNotificationThrottleServiceProvider extends ServiceProvider
+class LaravelNotificationRateLimitServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.

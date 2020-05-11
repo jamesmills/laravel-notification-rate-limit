@@ -25,8 +25,8 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Jamesmills\LaravelNotificationThrottle\ShouldThrottle;
-use Jamesmills\LaravelNotificationThrottle\ThrottledNotification;
+use Jamesmills\LaravelNotificationRateLimit\ShouldThrottle;
+use Jamesmills\LaravelNotificationRateLimit\ThrottledNotification;
 
 class NotifyUserOfOrderUpdateNotification extends Notification implements ShouldThrottle
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Jamesmills\LaravelNotificationThrottle;
+namespace Jamesmills\LaravelNotificationRateLimit;
 
 interface ShouldThrottle
 {

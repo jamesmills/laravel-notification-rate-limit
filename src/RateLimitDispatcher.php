@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Jamesmills\LaravelNotificationThrottle;
+namespace Jamesmills\LaravelNotificationRateLimit;
 
 use Illuminate\Notifications\ChannelManager;
-use Jamesmills\LaravelNotificationThrottle\Events\NotificationRateLimitReached;
+use Jamesmills\LaravelNotificationRateLimit\Events\NotificationRateLimitReached;
 
 class RateLimitDispatcher extends ChannelManager
 {
