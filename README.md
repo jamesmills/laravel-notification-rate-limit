@@ -1,11 +1,11 @@
-# Very short description of the package
+# Laravel Notification Throttle
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jamesmills/laravel-notification-throttle.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-throttle)
 [![Build Status](https://img.shields.io/travis/jamesmills/laravel-notification-throttle/master.svg?style=flat-square)](https://travis-ci.org/jamesmills/laravel-notification-throttle)
 [![Quality Score](https://img.shields.io/scrutinizer/g/jamesmills/laravel-notification-throttle.svg?style=flat-square)](https://scrutinizer-ci.com/g/jamesmills/laravel-notification-throttle)
 [![Total Downloads](https://img.shields.io/packagist/dt/jamesmills/laravel-notification-throttle.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-throttle)
 
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
+Rate Limiting Notifications in Laravel. Using Laravel's native rate limiter to avoid flooding users with duplicate notifications.
 
 ## Installation
 
@@ -15,6 +15,52 @@ You can install the package via composer:
 composer require jamesmills/laravel-notification-throttle
 ```
 
+### Swap the default `Notifiable` with `ThrottledNotifiable`
+
+```
+<?php
+
+    namespace App;
+
+    use Illuminate\Foundation\Auth\User as Authenticatable;
+    use Jamesmills\LaravelNotificationThrottle\ThrottledNotifiable;
+
+    class User extends Authenticatable
+    {
+        use ThrottledNotifiable;
+    
+    ...
+```
+
+### Add `ShouldThrottle` and `ThrottledNotification` to your notification Class
+    
+```
+    <?php
+
+    namespace App\Notifications;
+
+    use Illuminate\Bus\Queueable;
+    use Illuminate\Notifications\Messages\MailMessage;
+    use Illuminate\Notifications\Notification;
+    use Jamesmills\LaravelNotificationThrottle\ShouldThrottle;
+    use Jamesmills\LaravelNotificationThrottle\ThrottledNotification;
+
+    class NotifyUserOfOrderUpdateNotification extends Notification implements ShouldThrottle
+    {
+        use Queueable;
+        use ThrottledNotification;
+    
+    ...
+```
+    
+    
+    
+    
+    
+    
+    
+    
+    
 ## Usage
 
 ``` php
