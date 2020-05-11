@@ -17,54 +17,53 @@ composer require jamesmills/laravel-notification-throttle
 
 ### Swap the default `Notifiable` with `ThrottledNotifiable`
 
-```
+```php
 <?php
 
-    namespace App;
+namespace App;
 
-    use Illuminate\Foundation\Auth\User as Authenticatable;
-    use Jamesmills\LaravelNotificationThrottle\ThrottledNotifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Jamesmills\LaravelNotificationThrottle\ThrottledNotifiable;
 
-    class User extends Authenticatable
-    {
-        use ThrottledNotifiable;
-    
-    ...
+class User extends Authenticatable
+{
+    use ThrottledNotifiable;
+
+...
 ```
 
 ### Add `ShouldThrottle` and `ThrottledNotification` to your notification Class
-    
+
+```php
+<?php
+
+namespace App\Notifications;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
+use Jamesmills\LaravelNotificationThrottle\ShouldThrottle;
+use Jamesmills\LaravelNotificationThrottle\ThrottledNotification;
+
+class NotifyUserOfOrderUpdateNotification extends Notification implements ShouldThrottle
+{
+    use Queueable;
+    use ThrottledNotification;
+
+...
 ```
-    <?php
 
-    namespace App\Notifications;
-
-    use Illuminate\Bus\Queueable;
-    use Illuminate\Notifications\Messages\MailMessage;
-    use Illuminate\Notifications\Notification;
-    use Jamesmills\LaravelNotificationThrottle\ShouldThrottle;
-    use Jamesmills\LaravelNotificationThrottle\ThrottledNotification;
-
-    class NotifyUserOfOrderUpdateNotification extends Notification implements ShouldThrottle
-    {
-        use Queueable;
-        use ThrottledNotification;
-    
-    ...
-```
-    
-    
-    
-    
-    
-    
-    
-    
-    
 ## Usage
 
+### Overding the throttle time. 
+
+By default an throttled Notification will be throttled for `60` seconds. If you would like to override this you can add the below `throttleForSeconds` method to your Notification class.
+    
 ``` php
-// Usage description here
+public function throttleForSeconds()
+{
+    return 10;
+}
 ```
 
 ### Testing

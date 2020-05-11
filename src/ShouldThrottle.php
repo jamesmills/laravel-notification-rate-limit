@@ -7,5 +7,5 @@ interface ShouldThrottle
     function throttleKey($instance, $user);
     function limiter();
     function maxAttempts();
-    function throttleDecaySeconds();
+    function throttleForSeconds();
 }
