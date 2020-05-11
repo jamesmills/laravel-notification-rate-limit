@@ -9,15 +9,29 @@ use Illuminate\Support\Str;
 trait RateLimitedNotification
 {
     /**
-     * @param $instance
+     * @param $notification
      * @param $user
      * @return string
      */
-    public function throttleKey($instance, $user)
+    public function throttleKey($notification, $notifiables)
     {
-        return Str::lower(
-            class_basename($instance) . '|' . 1 . '|' . $user->id
-        );
+        if (is_array($notifiables)) {
+            // TODO Sort this out?!
+
+            /*
+             * If this notification is being sent to a number of users then we probably need to change the
+             * key format we use??!!?!?!
+             */
+        }
+
+        $parts = [
+            config('laravel-notification-rate-limit.key_prefix', 'LaravelNotificationRateLimit'),
+            class_basename($notification),
+            serialize($notification),
+            $notifiables->id
+        ];
+
+        return Str::lower(implode('.', $parts));
     }
 
     /**

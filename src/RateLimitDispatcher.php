@@ -20,7 +20,7 @@ class RateLimitDispatcher extends ChannelManager
 
         if ($notification instanceof ShouldRateLimit) {
 
-            $key = $notification->throttleKey($notification, $notification);
+            $key = $notification->throttleKey($notification, $notifiables);
 
             if ($notification->limiter()->tooManyAttempts($key, $notification->maxAttempts())) {
 
@@ -28,7 +28,7 @@ class RateLimitDispatcher extends ChannelManager
 
                 if ($notification->logSkippedNotifications()) {
                     \Log::notice('Skipping sending notification. Rate limit reached.', [
-                        'key' => $key,
+                        'notification' => class_basename($notification),
                         'availableIn' => $notification->limiter()->availableIn($key),
                     ]);
                 }
