@@ -1,11 +1,11 @@
 {
-    "name": "jamesmills/laravel-notification-throttle",
+    "name": "jamesmills/laravel-notification-rate-limit",
     "description": "Rate limiter to avoid flooding users with duplicate notifications.",
     "keywords": [
         "jamesmills",
-        "laravel-notification-throttle"
+        "laravel-notification-rate-limit"
     ],
-    "homepage": "https://github.com/jamesmills/laravel-notification-throttle",
+    "homepage": "https://github.com/jamesmills/laravel-notification-rate-limit",
     "license": "MIT",
     "type": "library",
     "authors": [

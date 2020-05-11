@@ -1,35 +1,18 @@
-# Laravel Notification Throttle
+# Laravel Notification Rate Limit
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jamesmills/laravel-notification-throttle.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-throttle)
 [![Build Status](https://img.shields.io/travis/jamesmills/laravel-notification-throttle/master.svg?style=flat-square)](https://travis-ci.org/jamesmills/laravel-notification-throttle)
 [![Quality Score](https://img.shields.io/scrutinizer/g/jamesmills/laravel-notification-throttle.svg?style=flat-square)](https://scrutinizer-ci.com/g/jamesmills/laravel-notification-throttle)
 [![Total Downloads](https://img.shields.io/packagist/dt/jamesmills/laravel-notification-throttle.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-throttle)
 
-Rate Limiting Notifications in Laravel. Using Laravel's native rate limiter to avoid flooding users with duplicate notifications.
+Rate Limiting Notifications in Laravel using Laravel's native rate limiter to avoid flooding users with duplicate notifications.
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require jamesmills/laravel-notification-throttle
-```
-
-### Swap the default `Notifiable` with `ThrottledNotifiable`
-
-```php
-<?php
-
-namespace App;
-
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Jamesmills\LaravelNotificationThrottle\ThrottledNotifiable;
-
-class User extends Authenticatable
-{
-    use ThrottledNotifiable;
-
-...
+composer require jamesmills/laravel-notification-rate-limit
 ```
 
 ### Add `ShouldThrottle` and `ThrottledNotification` to your notification Class
