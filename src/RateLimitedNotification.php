@@ -49,6 +49,6 @@ trait RateLimitedNotification
 
     public function logSkippedNotifications()
     {
-        return config('');
+        return config('laravel-notification-rate-limit.log_skipped_notifications', true);
     }
 }

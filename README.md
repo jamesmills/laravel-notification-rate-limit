@@ -48,6 +48,25 @@ public function throttleForSeconds()
     return 10;
 }
 ```
+    
+### Logging skipped notifciations
+
+By default this package will log all skipped notifications.
+    
+To customise this you can either publish the config and overide the default for all by updating the `log_skipped_notifications` config setting or you can do this on a Notification by Notification basis by adding below to your Notification class.
+    
+```php
+public function logSkippedNotifications()
+{
+    return false;
+}
+```
+
+## Publish Config
+    
+```
+php artisan vendor:publish --provider="Jamesmills\LaravelNotificationRateLimit\LaravelNotificationRateLimitServiceProvider"
+```
 
 ### Testing
 
