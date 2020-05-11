@@ -6,7 +6,7 @@ use Illuminate\Cache\RateLimiter;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 
-trait ThrottledNotification
+trait RateLimitedNotification
 {
     /**
      * @param $instance
@@ -45,5 +45,10 @@ trait ThrottledNotification
     public function throttleForSeconds()
     {
         return 60;
+    }
+
+    public function logSkippedNotifications()
+    {
+        return config('');
     }
 }

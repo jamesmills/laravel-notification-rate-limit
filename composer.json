@@ -44,11 +44,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Jamesmills\\LaravelNotificationRateLimit\\LaravelNotificationThrottleServiceProvider"
-            ],
-            "aliases": {
-                "LaravelNotificationThrottle": "Jamesmills\\LaravelNotificationRateLimit\\LaravelNotificationThrottleFacade"
-            }
+                "Jamesmills\\LaravelNotificationRateLimit\\LaravelNotificationRateLimitServiceProvider"
+            ]
         }
     }
 }

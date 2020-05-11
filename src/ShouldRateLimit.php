@@ -2,7 +2,7 @@
 
 namespace Jamesmills\LaravelNotificationRateLimit;
 
-interface ShouldThrottle
+interface ShouldRateLimit
 {
     function throttleKey($instance, $user);
     function limiter();
