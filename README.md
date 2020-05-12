@@ -57,6 +57,10 @@ php artisan vendor:publish --provider="Jamesmills\LaravelNotificationRateLimit\L
 ## Options
     
 You can custom settings on an individual Notification level.
+    
+### Events
+
+By default the `NotificationRateLimitReached` event will be fired when a Notification is skipped. You can customise this using the `event` option in the config.
 
 ### Overding the time the notification is rate limited for 
 
