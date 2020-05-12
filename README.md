@@ -95,6 +95,18 @@ Update for an individual basis by adding the below to the Notification
 protected $shouldRateLimitUniqueNotifications = false;
 ```
 
+### Customising the cache key
+
+You may want to customise the parts used in the cache key. You can do this by adding the below to your Notification.
+
+```php
+public function rateLimitCustomCacheKeyParts()
+{
+    return [
+        $this->account_id
+    ];
+}
+```
     
 
 ### Testing
