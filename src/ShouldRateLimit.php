@@ -4,8 +4,11 @@ namespace Jamesmills\LaravelNotificationRateLimit;
 
 interface ShouldRateLimit
 {
-    function rateLimitKey($instance, $user);
-    function limiter();
-    function maxAttempts();
-    function rateLimitForSeconds();
+    public function rateLimitKey($instance, $user);
+
+    public function limiter();
+
+    public function maxAttempts();
+
+    public function rateLimitForSeconds();
 }

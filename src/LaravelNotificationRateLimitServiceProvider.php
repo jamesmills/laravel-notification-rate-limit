@@ -30,6 +30,5 @@ class LaravelNotificationRateLimitServiceProvider extends ServiceProvider
 
         // Automatically apply the package configuration
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'laravel-notification-rate-limit');
-
     }
 }
