@@ -1,9 +1,9 @@
 # Laravel Notification Rate Limit
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/jamesmills/laravel-notification-throttle.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-throttle)
-[![Build Status](https://img.shields.io/travis/jamesmills/laravel-notification-throttle/master.svg?style=flat-square)](https://travis-ci.org/jamesmills/laravel-notification-throttle)
-[![Quality Score](https://img.shields.io/scrutinizer/g/jamesmills/laravel-notification-throttle.svg?style=flat-square)](https://scrutinizer-ci.com/g/jamesmills/laravel-notification-throttle)
-[![Total Downloads](https://img.shields.io/packagist/dt/jamesmills/laravel-notification-throttle.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-throttle)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-rate-limit)
+[![Build Status](https://img.shields.io/travis/jamesmills/laravel-notification-rate-limit/master.svg?style=flat-square)](https://travis-ci.org/jamesmills/laravel-notification-rate-limit)
+[![Quality Score](https://img.shields.io/scrutinizer/g/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)](https://scrutinizer-ci.com/g/jamesmills/laravel-notification-rate-limit)
+[![Total Downloads](https://img.shields.io/packagist/dt/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-rate-limit)
 
 Rate Limiting Notifications in Laravel using Laravel's native rate limiter to avoid flooding users with duplicate notifications.
 
@@ -15,7 +15,9 @@ You can install the package via composer:
 composer require jamesmills/laravel-notification-rate-limit
 ```
 
-### Add `ShouldRateLimit` and `RateLimitedNotification` to your notification Class
+### Update your Notifications
+    
+Add `ShouldRateLimit` and `RateLimitedNotification` to your the Notifications you would like to Raterate limit.
 
 ```php
 <?php
@@ -75,6 +77,20 @@ Update for an individual basis by adding the below to the Notification
 // Do not log skipped notifications
 protected $logSkippedNotifications = false;
 ```
+    
+### Skipping uniqueue notifciations
+
+By default the Rate Limiter uses a cache key made up of some opinionated defaults. One of these default keys is a a serialisation of the notification it's using `serialize($notification)`. You may wish to turn this off. 
+
+Update globally with the `should_rate_limit_unique_notifications` config setting.
+
+Update for an individual basis by adding the below to the Notification
+
+```php
+// Do not log skipped notifications
+protected $shouldRateLimitUniqueNotifications = false;
+```
+
 
 ### Testing
 
