@@ -15,7 +15,7 @@ You can install the package via composer:
 composer require jamesmills/laravel-notification-rate-limit
 ```
 
-### Add `ShouldThrottle` and `ThrottledNotification` to your notification Class
+### Add `ShouldRateLimit` and `RateLimitedNotification` to your notification Class
 
 ```php
 <?php
@@ -25,13 +25,13 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Jamesmills\LaravelNotificationRateLimit\ShouldThrottle;
-use Jamesmills\LaravelNotificationRateLimit\ThrottledNotification;
+use Jamesmills\LaravelNotificationRateLimit\RateLimitedNotification;
+use Jamesmills\LaravelNotificationRateLimit\ShouldRateLimit;
 
-class NotifyUserOfOrderUpdateNotification extends Notification implements ShouldThrottle
+class NotifyUserOfOrderUpdateNotification extends Notification implements ShouldRateLimit
 {
     use Queueable;
-    use ThrottledNotification;
+    use RateLimitedNotification;
 
 ...
 ```
