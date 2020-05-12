@@ -1,15 +1,14 @@
 # Laravel Notification Rate Limit
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-rate-limit)
-[![Build Status](https://img.shields.io/travis/jamesmills/laravel-notification-rate-limit/master.svg?style=flat-square)](https://travis-ci.org/jamesmills/laravel-notification-rate-limit)
-[![Quality Score](https://img.shields.io/scrutinizer/g/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)](https://scrutinizer-ci.com/g/jamesmills/laravel-notification-rate-limit)
 [![Total Downloads](https://img.shields.io/packagist/dt/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-rate-limit)
-
 ![Licence](https://img.shields.io/packagist/l/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)
-[![Buy us a tree](https://img.shields.io/badge/Treeware-%F0%9F%8C%B3-lightgreen?style=flat-square)](https://plant.treeware.earth/jamesmills/laravel-notification-rate-limit)
+[![Buy us a tree](https://img.shields.io/badge/treeware-%F0%9F%8C%B3-lightgreen?style=flat-square)](https://plant.treeware.earth/jamesmills/laravel-notification-rate-limit)
 [![Treeware (Trees)](https://img.shields.io/treeware/trees/jamesmills/laravel-notification-rate-limit?style=flat-square)](https://plant.treeware.earth/jamesmills/laravel-notification-rate-limit)
 
 Rate Limiting Notifications in Laravel using Laravel's native rate limiter to avoid flooding users with duplicate notifications.
+
+**IN ACTIVE DEVELOPMENT - Please be advised that this package is still in active development and has not been fully tested**
 
 ## Installation
 
@@ -136,7 +135,11 @@ If you discover any security related issues, please email james@jamesmills.co.uk
 
 This package is 100% free and open-source, under the [MIT License (MIT)](LICENSE.md). Use it however you want.
 
-This package is [Treeware](https://treeware.earth). If you use it in production, then we ask that you [**buy the world a tree**](https://plant.treeware.earth/jamesmills/laravel-timezone) to thank us for our work. By contributing to the Treeware forest you’ll be creating employment for local families and restoring wildlife habitats.
+This package is [Treeware](https://treeware.earth). If you use it in production, then we ask that you [**buy the world a tree**](https://plant.treeware.earth/jamesmills/laravel-notification-rate-limit) to thank us for our work. By contributing to the Treeware forest you’ll be creating employment for local families and restoring wildlife habitats.
+
+## Inspiration
+
+Inspiration for this package was taken from [Rate Limiting Notifications in Laravel](https://scottwakefield.co.uk/journal/rate-limiting-notifications-in-laravel/) by [Scott Wakefield](https://twitter.com/scottpwakefield)
     
 ## Laravel Package Boilerplate
 
