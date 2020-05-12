@@ -38,7 +38,9 @@ class NotifyUserOfOrderUpdateNotification extends Notification implements Should
 
 ## Publish Config
     
-Everything in this package has opinionated global defaults. You can overide everything in the config. Publish it using the command below.
+Everything in this package has opinionated global defaults. However, you can overide everything in the config. 
+    
+Publish it using the command below.
 
 ```
 php artisan vendor:publish --provider="Jamesmills\LaravelNotificationRateLimit\LaravelNotificationRateLimitServiceProvider"
@@ -50,7 +52,11 @@ You can custom settings on an individual Notification level.
 
 ### Overding the time the notification is rate limited for 
 
-By default an throttled Notification will be throttled for `60` seconds. If you would like to override this you can add the below to your Notification class.
+By default an throttled Notification will be throttled for `60` seconds. 
+    
+Update globally with the `rate_limit_seconds` config setting.
+
+Update for an individual basis by adding the below to the Notification
     
 ``` php
 // Change rate limit to 1 hour
@@ -63,14 +69,12 @@ By default this package will log all skipped notifications.
     
 Update globally with the `log_skipped_notifications` config setting.
     
-Update for an individual Notification
+Update for an individual basis by adding the below to the Notification
     
 ```php
 // Do not log skipped notifications
 protected $logSkippedNotifications = false;
 ```
-
-
 
 ### Testing
 

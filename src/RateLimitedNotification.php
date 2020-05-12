@@ -17,49 +17,37 @@ trait RateLimitedNotification
      * @param $user
      * @return string
      */
-    private function rateLimitKey($notification, $notifiables)
+    public function rateLimitKey($notification, $notifiables)
     {
-        if (is_array($notifiables)) {
-            // TODO Sort this out?!
+//        echo '<pre>';
+//        var_dump($notification);
+//        exit;
 
-            /*
-             * If this notification is being sent to a number of users then we probably need to change the
-             * key format we use??!!?!?!
-             */
-        }
-
-        $parts = array_merge([
-            config('laravel-notification-rate-limit.key_prefix'),
-        ], $this->rateLimitCacheKeyParts());
+        $parts = array_merge(
+            [
+                config('laravel-notification-rate-limit.key_prefix'),
+                class_basename($notification),
+                $notifiables->id,
+            ],
+            $this->rateLimitCustomCacheKeyParts(),
+            $this->rateLimitUniqueueNotifications($notification)
+        );
 
         return Str::lower(implode('.', $parts));
     }
 
-    public function rateLimitCacheKeyParts()
+    public function rateLimitCustomCacheKeyParts()
     {
-        return [
-            class_basename($notification),
-            serialize($notification),
-            $notifiables->id
-        ];
+        return [];
     }
 
-    /**
-     * Cache key prefix
-     * @return \Illuminate\Config\Repository|mixed
-     */
-    private function getPrexif()
+    public function rateLimitUniqueueNotifications($notification)
     {
-        return config('laravel-notification-rate-limit.key_prefix');
-    }
+        if ($this->shouldRateLimitUniqueNotifications() == true) {
+            return [serialize($notification)];
+        }
 
-    /**
-     * The rate limiter instance
-     * @return RateLimiter|\Illuminate\Contracts\Foundation\Application|mixed
-     */
-    public function rateLimitUnique()
-    {
-        return app(RateLimiter::class);
+        return [];
     }
 
     /**
@@ -96,5 +84,10 @@ trait RateLimitedNotification
     public function logSkippedNotifications()
     {
         return $this->logSkippedNotifications ?? config('laravel-notification-rate-limit.log_skipped_notifications');
+    }
+
+    public function shouldRateLimitUniqueNotifications()
+    {
+        return $this->shouldRateLimitUniqueNotifications ?? config('laravel-notification-rate-limit.should_rate_limit_unique_notifications');
     }
 }

@@ -22,6 +22,8 @@ class RateLimitChannelManager extends ChannelManager
 
             $key = $notification->rateLimitKey($notification, $notifiables);
 
+            \Log::info($key);
+
             if ($notification->limiter()->tooManyAttempts($key, $notification->maxAttempts())) {
 
                 event(new NotificationRateLimitReached($notification));
