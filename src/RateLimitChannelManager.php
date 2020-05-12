@@ -3,7 +3,6 @@
 namespace Jamesmills\LaravelNotificationRateLimit;
 
 use Illuminate\Notifications\ChannelManager;
-use Jamesmills\LaravelNotificationRateLimit\Events\NotificationRateLimitReached;
 
 class RateLimitChannelManager extends ChannelManager
 {
@@ -20,7 +19,6 @@ class RateLimitChannelManager extends ChannelManager
             $key = $notification->rateLimitKey($notification, $notifiables);
 
             if ($notification->limiter()->tooManyAttempts($key, $notification->maxAttempts())) {
-
                 $event = config('laravel-notification-rate-limit.event');
                 event(new $event($notification));
 
