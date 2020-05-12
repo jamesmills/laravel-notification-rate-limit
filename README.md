@@ -2,6 +2,9 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-rate-limit)
 [![Total Downloads](https://img.shields.io/packagist/dt/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-rate-limit)
+[![Quality Score](https://img.shields.io/scrutinizer/g/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)](https://scrutinizer-ci.com/g/jamesmills/laravel-notification-rate-limit)
+[![StyleCI](https://github.styleci.io/repos/262754309/shield?branch=master)](https://github.styleci.io/repos/262754309)
+
 ![Licence](https://img.shields.io/packagist/l/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)
 [![Buy us a tree](https://img.shields.io/badge/treeware-%F0%9F%8C%B3-lightgreen?style=flat-square)](https://plant.treeware.earth/jamesmills/laravel-notification-rate-limit)
 [![Treeware (Trees)](https://img.shields.io/treeware/trees/jamesmills/laravel-notification-rate-limit?style=flat-square)](https://plant.treeware.earth/jamesmills/laravel-notification-rate-limit)
