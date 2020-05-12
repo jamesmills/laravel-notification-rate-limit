@@ -5,6 +5,10 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)](https://scrutinizer-ci.com/g/jamesmills/laravel-notification-rate-limit)
 [![Total Downloads](https://img.shields.io/packagist/dt/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)](https://packagist.org/packages/jamesmills/laravel-notification-rate-limit)
 
+![Licence](https://img.shields.io/packagist/l/jamesmills/laravel-notification-rate-limit.svg?style=flat-square)
+[![Buy us a tree](https://img.shields.io/badge/Treeware-%F0%9F%8C%B3-lightgreen?style=flat-square)](https://plant.treeware.earth/jamesmills/laravel-notification-rate-limit)
+[![Treeware (Trees)](https://img.shields.io/treeware/trees/jamesmills/laravel-notification-rate-limit?style=flat-square)](https://plant.treeware.earth/jamesmills/laravel-notification-rate-limit)
+
 Rate Limiting Notifications in Laravel using Laravel's native rate limiter to avoid flooding users with duplicate notifications.
 
 ## Installation
@@ -80,17 +84,18 @@ protected $logSkippedNotifications = false;
     
 ### Skipping uniqueue notifciations
 
-By default the Rate Limiter uses a cache key made up of some opinionated defaults. One of these default keys is a a serialisation of the notification it's using `serialize($notification)`. You may wish to turn this off. 
+By default the Rate Limiter uses a cache key made up of some opinionated defaults. One of these default keys is `serialize($notification)`. You may wish to turn this off. 
 
 Update globally with the `should_rate_limit_unique_notifications` config setting.
 
 Update for an individual basis by adding the below to the Notification
-
+    
 ```php
 // Do not log skipped notifications
 protected $shouldRateLimitUniqueNotifications = false;
 ```
 
+    
 
 ### Testing
 
@@ -115,10 +120,12 @@ If you discover any security related issues, please email james@jamesmills.co.uk
 - [James Mills](https://github.com/jamesmills)
 - [All Contributors](../../contributors)
 
-## License
+## License (Treeware)
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+This package is 100% free and open-source, under the [MIT License (MIT)](LICENSE.md). Use it however you want.
 
+This package is [Treeware](https://treeware.earth). If you use it in production, then we ask that you [**buy the world a tree**](https://plant.treeware.earth/jamesmills/laravel-timezone) to thank us for our work. By contributing to the Treeware forest you’ll be creating employment for local families and restoring wildlife habitats.
+    
 ## Laravel Package Boilerplate
 
 This package was generated using the [Laravel Package Boilerplate](https://laravelpackageboilerplate.com).
