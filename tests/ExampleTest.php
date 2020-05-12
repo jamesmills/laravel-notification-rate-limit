@@ -2,12 +2,11 @@
 
 namespace Jamesmills\LaravelNotificationRateLimit\Tests;
 
-use Orchestra\Testbench\TestCase;
 use Jamesmills\LaravelNotificationRateLimit\LaravelNotificationRateLimitServiceProvider;
+use Orchestra\Testbench\TestCase;
 
 class ExampleTest extends TestCase
 {
-
     protected function getPackageProviders($app)
     {
         return [LaravelNotificationRateLimitServiceProvider::class];

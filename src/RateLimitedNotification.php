@@ -7,8 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 
 /**
- * Trait RateLimitedNotification
- * @package Jamesmills\LaravelNotificationRateLimit
+ * Trait RateLimitedNotification.
  */
 trait RateLimitedNotification
 {
@@ -51,7 +50,7 @@ trait RateLimitedNotification
     }
 
     /**
-     * The rate limiter instance
+     * The rate limiter instance.
      * @return RateLimiter|\Illuminate\Contracts\Foundation\Application|mixed
      */
     public function limiter()
@@ -60,7 +59,7 @@ trait RateLimitedNotification
     }
 
     /**
-     * Max attempts to accept in the throttled timeframe
+     * Max attempts to accept in the throttled timeframe.
      * @return \Illuminate\Config\Repository|mixed
      */
     public function maxAttempts()
@@ -69,7 +68,7 @@ trait RateLimitedNotification
     }
 
     /**
-     * Time in seconds to throttle the notifications
+     * Time in seconds to throttle the notifications.
      * @return \Illuminate\Config\Repository|mixed
      */
     public function rateLimitForSeconds()
@@ -78,7 +77,7 @@ trait RateLimitedNotification
     }
 
     /**
-     * If to enable logging when a notification is skipped
+     * If to enable logging when a notification is skipped.
      * @return \Illuminate\Config\Repository|mixed
      */
     public function logSkippedNotifications()
