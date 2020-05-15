@@ -22,6 +22,7 @@ class TestNotification extends Notification implements ShouldRateLimit
     public function toMail($notifiable)
     {
         return (new MailMessage)
+            ->subject('Hello World!')
             ->greeting('Hello!')
             ->line('You must be the world.')
             ->line('Nice to meet you.');
