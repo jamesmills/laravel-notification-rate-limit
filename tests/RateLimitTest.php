@@ -19,6 +19,7 @@ class RateLimitTest extends TestCase
 
 
     private $user;
+    private $otherUser;
 
     public function setUp(): void
     {
@@ -28,6 +29,7 @@ class RateLimitTest extends TestCase
         Config::set('mail.default', 'array');
 
         $this->user = new User(['id' => $this->faker->numberBetween(1, 10000), 'name' => $this->faker->name, 'email' => $this->faker->email]);
+        $this->otherUser = new User(['id' => $this->faker->numberBetween(1, 10000), 'name' => $this->faker->name, 'email' => $this->faker->email]);
     }
 
     /** @test */
@@ -67,12 +69,41 @@ class RateLimitTest extends TestCase
     }
 
     /** @test */
+    public function it_does_not_get_confused_between_multiple_users()
+    {
+        Event::fake();
+        Notification::fake();
+
+        $this->app->singleton(ChannelManager::class, function ($app) {
+            return new RateLimitChannelManager($app);
+        });
+        Config::set('laravel-notification-rate-limit.rate_limit_seconds', 10);
+
+        // Ensure we are starting clean
+        Log::swap(new LogFake);
+        Log::assertNotLogged('notice');
+        // Send first notification and expect it to succeed
+        $this->user->notify(new TestNotification());
+        Event::assertDispatched(NotificationSent::class);
+        Event::assertNotDispatched(NotificationRateLimitReached::class);
+        // Send a notification to another user and expect it to succeed
+        $this->otherUser->notify(new TestNotification());
+        Event::assertDispatched(NotificationSent::class);
+        Event::assertNotDispatched(NotificationRateLimitReached::class);
+        // Send a second notice to the first user and expect it to be skipped
+        Log::assertNotLogged('notice');
+        $this->user->notify(new TestNotification());
+        Event::assertDispatched(NotificationRateLimitReached::class);
+        Log::assertLogged('notice');
+    }
+
+    /** @test */
     public function it_will_resume_notifications_after_expiration()
     {
         Event::fake();
         Notification::fake();
 
-        Config::set('laravel-notification-rate-limit.rate_limit_seconds', 10);
+        Config::set('laravel-notification-rate-limit.rate_limit_seconds', 0.1);
 
         $this->app->singleton(ChannelManager::class, function ($app) {
             return new RateLimitChannelManager($app);
