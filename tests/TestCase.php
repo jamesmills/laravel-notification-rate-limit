@@ -3,13 +3,12 @@
 
 namespace Jamesmills\LaravelNotificationRateLimit\Tests;
 
-use Illuminate\Support\Facades\Config;
 use Jamesmills\LaravelNotificationRateLimit\LaravelNotificationRateLimitServiceProvider;
-use Monolog\Logger;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
 {
+
     public function setUp(): void
     {
         parent::setUp();

@@ -13,6 +13,7 @@ use TiMacDonald\Log\LogFake;
 
 class RateLimitTest extends TestCase
 {
+
     use WithFaker;
 
 
