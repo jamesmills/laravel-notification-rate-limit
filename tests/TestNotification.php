@@ -10,7 +10,6 @@ use Jamesmills\LaravelNotificationRateLimit\ShouldRateLimit;
 
 class TestNotification extends Notification implements ShouldRateLimit
 {
-
     use Queueable;
     use RateLimitedNotification;
 

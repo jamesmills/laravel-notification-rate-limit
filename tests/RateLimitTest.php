@@ -13,10 +13,8 @@ use Jamesmills\LaravelNotificationRateLimit\Events\NotificationRateLimitReached;
 use Jamesmills\LaravelNotificationRateLimit\RateLimitChannelManager;
 use TiMacDonald\Log\LogFake;
 
-
 class RateLimitTest extends TestCase
 {
-
     use WithFaker;
 
 
@@ -30,7 +28,6 @@ class RateLimitTest extends TestCase
         Config::set('mail.default', 'array');
 
         $this->user = new User(['id' => $this->faker->numberBetween(1, 10000), 'name' => $this->faker->name, 'email' => $this->faker->email]);
-
     }
 
     /** @test */
@@ -49,7 +46,6 @@ class RateLimitTest extends TestCase
     /** @test */
     public function it_will_skip_notifications_until_limit_expires()
     {
-
         Event::fake();
         Notification::fake();
 
@@ -68,14 +64,11 @@ class RateLimitTest extends TestCase
         $this->user->notify(new TestNotification());
         Event::assertDispatched(NotificationRateLimitReached::class);
         Log::assertLogged('notice');
-
-
     }
 
     /** @test */
     public function it_will_resume_notifications_after_expiration()
     {
-
         Event::fake();
         Notification::fake();
 
@@ -98,7 +91,5 @@ class RateLimitTest extends TestCase
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);
         Log::assertNotLogged('notice');
-
-
     }
 }
