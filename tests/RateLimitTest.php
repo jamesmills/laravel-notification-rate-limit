@@ -54,13 +54,16 @@ class RateLimitTest extends TestCase
         $this->app->singleton(ChannelManager::class, function ($app) {
             return new RateLimitChannelManager($app);
         });
+
         // Ensure we are starting clean
         Log::swap(new LogFake);
         Log::assertNotLogged('notice');
+
         // Send first notification and expect it to succeed
         $this->user->notify(new TestNotification());
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);
+
         // Send second notification and expect it to be skipped
         Log::assertNotLogged('notice');
         $this->user->notify(new TestNotification());
@@ -82,10 +85,12 @@ class RateLimitTest extends TestCase
         // Ensure we are starting clean
         Log::swap(new LogFake);
         Log::assertNotLogged('notice');
+
         // Send first notification and expect it to succeed
         $this->user->notify(new TestNotification());
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);
+
         // Send a notification to another user and expect it to succeed
         $this->otherUser->notify(new TestNotification());
         Event::assertDispatched(NotificationSent::class);
@@ -108,16 +113,20 @@ class RateLimitTest extends TestCase
         $this->app->singleton(ChannelManager::class, function ($app) {
             return new RateLimitChannelManager($app);
         });
+
         // Ensure we are starting clean.
         Log::swap(new LogFake);
         Log::assertNotLogged('notice');
+
         // Send first notification and expect it to succeed.
         $this->user->notify(new TestNotification());
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);
         Log::assertNotLogged('notice');
+
         // Wait until the rate limiter has expired
         sleep(0.1);
+
         // Send another notification and expect it to succeed.
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);
