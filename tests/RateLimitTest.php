@@ -95,6 +95,16 @@ class RateLimitTest extends TestCase
         $this->otherUser->notify(new TestNotification());
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);
+
+
+        // TODO this should not pass!
+        // Check that we can use both methods of sending notifications to multiple users
+        Notification::send([$this->user, $this->otherUser], new TestNotification());
+        Event::assertDispatched(NotificationSent::class);
+        Event::assertNotDispatched(NotificationRateLimitReached::class);
+
+
+
         // Send a second notice to the first user and expect it to be skipped
         Log::assertNotLogged('notice');
         $this->user->notify(new TestNotification());
