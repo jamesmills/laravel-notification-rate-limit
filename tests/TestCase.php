@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Jamesmills\LaravelNotificationRateLimit\Tests;
 
 use Jamesmills\LaravelNotificationRateLimit\LaravelNotificationRateLimitServiceProvider;

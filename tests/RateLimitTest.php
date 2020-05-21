@@ -17,7 +17,6 @@ class RateLimitTest extends TestCase
 {
     use WithFaker;
 
-
     private $user;
     private $otherUser;
 

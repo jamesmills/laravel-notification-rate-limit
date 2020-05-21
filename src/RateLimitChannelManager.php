@@ -37,6 +37,7 @@ class RateLimitChannelManager extends ChannelManager
 
             $notification->limiter()->hit($key, $notification->rateLimitForSeconds());
         }
+
         return true;
     }
 }
