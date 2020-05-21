@@ -11,8 +11,6 @@
 
 Rate Limiting Notifications in Laravel using Laravel's native rate limiter to avoid flooding users with duplicate notifications.
 
-**IN ACTIVE DEVELOPMENT - Please be advised that this package is still in active development and has not been fully tested**
-
 ## Installation
 
 You can install the package via composer:
