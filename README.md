@@ -44,7 +44,7 @@ class NotifyUserOfOrderUpdateNotification extends Notification implements Should
 
 ## Publish Config
     
-Everything in this package has opinionated global defaults. However, you can overide everything in the config. 
+Everything in this package has opinionated global defaults. However, you can override everything in the config. 
     
 Publish it using the command below.
 
@@ -73,7 +73,7 @@ Update for an individual basis by adding the below to the Notification
 protected $rateLimitForSeconds = 3600;
 ```
     
-### Logging skipped notifciations
+### Logging skipped notifications
 
 By default this package will log all skipped notifications.
     
@@ -86,7 +86,7 @@ Update for an individual basis by adding the below to the Notification
 protected $logSkippedNotifications = false;
 ```
     
-### Skipping uniqueue notifciations
+### Skipping uniqueue notifications
 
 By default the Rate Limiter uses a cache key made up of some opinionated defaults. One of these default keys is `serialize($notification)`. You may wish to turn this off. 
 
