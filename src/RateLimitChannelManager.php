@@ -3,7 +3,6 @@
 namespace Jamesmills\LaravelNotificationRateLimit;
 
 use Illuminate\Notifications\ChannelManager;
-use Illuminate\Notifications\Events\NotificationSent;
 
 class RateLimitChannelManager extends ChannelManager
 {
