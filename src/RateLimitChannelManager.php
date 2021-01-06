@@ -11,7 +11,6 @@ class RateLimitChannelManager extends ChannelManager
     {
         if ($this->checkRateLimit($notifiables, $notification)) {
             parent::send($notifiables, $notification);
-            event(new NotificationSent($notifiables, $notification, $this->channel()));
         }
     }
 
