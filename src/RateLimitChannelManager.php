@@ -3,14 +3,12 @@
 namespace Jamesmills\LaravelNotificationRateLimit;
 
 use Illuminate\Notifications\ChannelManager;
-use Illuminate\Notifications\Events\NotificationSent;
 
 class RateLimitChannelManager extends ChannelManager
 {
     public function send($notifiables, $notification)
     {
         if ($this->checkRateLimit($notifiables, $notification)) {
-            event(new NotificationSent($notifiables, $notification, $this->channel()));
             parent::send($notifiables, $notification);
         }
     }
