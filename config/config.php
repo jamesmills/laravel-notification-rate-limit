@@ -51,10 +51,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Rate Limit Uniqueue Notifications
+    | Rate Limit Unique Notifications
     |--------------------------------------------------------------------------
     |
-    | By default one of the cache keys is a seralised string of the
+    | By default one of the cache keys is a serialised string of the
     | notification. This means that every property of the notification
     | is used as the cache key. You can disable this if you want
     | to have full control of what key is used.
