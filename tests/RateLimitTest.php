@@ -2,7 +2,6 @@
 
 namespace Jamesmills\LaravelNotificationRateLimit\Tests;
 
-use Illuminate\Database\Eloquent\Collection as ModelCollection;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Notifications\Events\NotificationSent;
@@ -78,7 +77,6 @@ class RateLimitTest extends TestCase
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);
         sleep(0.1);
-
     }
 
     /** @test */

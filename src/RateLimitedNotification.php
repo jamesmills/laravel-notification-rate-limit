@@ -109,5 +109,4 @@ trait RateLimitedNotification
 
         return $notifiables;
     }
-
 }
