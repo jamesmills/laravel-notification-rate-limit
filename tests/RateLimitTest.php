@@ -52,10 +52,9 @@ class RateLimitTest extends TestCase
 
         Notification::assertNothingSent();
 
-        $notifiables = new ModelCollection([$this->user, $this->otherUser]);
-        Notification::send($notifiables, new TestNotification());
+        Notification::send([$this->user, $this->otherUser], new TestNotification());
 
-        Notification::assertSentTo(collect([$this->user, $this->otherUser]), TestNotification::class);
+        Notification::assertSentTo([$this->user, $this->otherUser], TestNotification::class);
         sleep(0.1);
     }
 
@@ -66,23 +65,21 @@ class RateLimitTest extends TestCase
         Event::fake();
         Notification::fake();
 
-        $this->app->singleton(ChannelManager::class, function ($app) {
-            return new RateLimitChannelManager($app);
-        });
-
         Log::swap(new LogFake);
         Log::assertNotLogged('notice');
 
         Notification::assertNothingSent();
 
-        $notifiables = new ModelCollection([$this->user, $this->otherUser]);
-        Notification::send($notifiables, new TestNotification());
+        // Have to call the RateLimitChannelManager directly as the facade is not testable
+        // e.g. Notification::send does not trigger the RateLimitChannelManager
+        $rateLimitChannelManager = new RateLimitChannelManager($this->app);
+        $rateLimitChannelManager->send([$this->user, $this->otherUser], new TestNotification());
 
-        Notification::assertSentTo($notifiables, TestNotification::class);
+        Event::assertDispatched(NotificationSent::class);
+        Event::assertNotDispatched(NotificationRateLimitReached::class);
         sleep(0.1);
 
     }
-
 
     /** @test */
     public function it_will_skip_notifications_until_limit_expires()

@@ -21,19 +21,16 @@ trait RateLimitedNotification
      */
     public function rateLimitKey($notification, $notifiables)
     {
-//        echo '<pre>';
-//        var_dump($notification);
-//        exit;
 
-//        $notifiables = $this->formatNotifiables($notifiables);
-//
-//        $notifiablesIds = (is_array($notifiables)) ? md5(implode(',', array_values($notifiables))) : $notifiables->implode('id', ',');
+        // Convert notifiables to Collection or Array
+        $notifiables = $this->formatNotifiables($notifiables);
+        $notifiablesIds = (is_array($notifiables)) ? md5(json_encode($notifiables)) : $notifiables->implode('id', ',');
 
         $parts = array_merge(
             [
                 config('laravel-notification-rate-limit.key_prefix'),
                 class_basename($notification),
-                $notifiables->id,
+                $notifiablesIds,
             ],
             $this->rateLimitCustomCacheKeyParts(),
             $this->rateLimitUniqueueNotifications($notification)
