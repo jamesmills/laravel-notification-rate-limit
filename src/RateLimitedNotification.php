@@ -3,7 +3,10 @@
 namespace Jamesmills\LaravelNotificationRateLimit;
 
 use Illuminate\Cache\RateLimiter;
+use Illuminate\Database\Eloquent\Collection as ModelCollection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
@@ -21,6 +24,10 @@ trait RateLimitedNotification
 //        echo '<pre>';
 //        var_dump($notification);
 //        exit;
+
+//        $notifiables = $this->formatNotifiables($notifiables);
+//
+//        $notifiablesIds = (is_array($notifiables)) ? md5(implode(',', array_values($notifiables))) : $notifiables->implode('id', ',');
 
         $parts = array_merge(
             [
@@ -89,4 +96,21 @@ trait RateLimitedNotification
     {
         return $this->shouldRateLimitUniqueNotifications ?? config('laravel-notification-rate-limit.should_rate_limit_unique_notifications');
     }
+
+    /**
+     * Format the notifiables into a Collection / array if necessary.
+     *
+     * @param  mixed  $notifiables
+     * @return \Illuminate\Database\Eloquent\Collection|array
+     */
+    protected function formatNotifiables($notifiables)
+    {
+        if (! $notifiables instanceof Collection && ! is_array($notifiables)) {
+            return $notifiables instanceof Model
+                ? new ModelCollection([$notifiables]) : [$notifiables];
+        }
+
+        return $notifiables;
+    }
+
 }

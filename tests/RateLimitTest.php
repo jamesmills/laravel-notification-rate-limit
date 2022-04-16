@@ -2,6 +2,7 @@
 
 namespace Jamesmills\LaravelNotificationRateLimit\Tests;
 
+use Illuminate\Database\Eloquent\Collection as ModelCollection;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Notifications\Events\NotificationSent;
@@ -43,6 +44,45 @@ class RateLimitTest extends TestCase
         Notification::assertSentTo([$this->user], TestNotification::class);
         sleep(0.1);
     }
+
+    /** @test */
+    public function it_can_send_notification_to_two_users(): void
+    {
+        Notification::fake();
+
+        Notification::assertNothingSent();
+
+        $notifiables = new ModelCollection([$this->user, $this->otherUser]);
+        Notification::send($notifiables, new TestNotification());
+
+        Notification::assertSentTo(collect([$this->user, $this->otherUser]), TestNotification::class);
+        sleep(0.1);
+    }
+
+    /** @test */
+    public function it_can_send_notification_to_two_ratelimited_users(): void
+    {
+        $this->withoutExceptionHandling();
+        Event::fake();
+        Notification::fake();
+
+        $this->app->singleton(ChannelManager::class, function ($app) {
+            return new RateLimitChannelManager($app);
+        });
+
+        Log::swap(new LogFake);
+        Log::assertNotLogged('notice');
+
+        Notification::assertNothingSent();
+
+        $notifiables = new ModelCollection([$this->user, $this->otherUser]);
+        Notification::send($notifiables, new TestNotification());
+
+        Notification::assertSentTo($notifiables, TestNotification::class);
+        sleep(0.1);
+
+    }
+
 
     /** @test */
     public function it_will_skip_notifications_until_limit_expires()
