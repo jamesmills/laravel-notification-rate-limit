@@ -76,7 +76,6 @@ class RateLimitTest extends TestCase
         );
     }
 
-
     /** @test */
     public function it_will_skip_notifications_until_limit_expires()
     {
@@ -118,7 +117,9 @@ class RateLimitTest extends TestCase
         });
         // Ensure we are starting clean
         Log::swap(new LogFake);
-        Log::assertNotLogged(function (LogEntry $log) { return $log->level == 'notice'; });
+        Log::assertNotLogged(function (LogEntry $log) {
+            return $log->level == 'notice';
+        });
 
         // Send first notification and expect it to succeed
         Notification::route('mail', $this->anonymousEmailAddress)
@@ -127,7 +128,9 @@ class RateLimitTest extends TestCase
         Event::assertNotDispatched(NotificationRateLimitReached::class);
 
         // Send second notification and expect it to be skipped
-        Log::assertNotLogged(function (LogEntry $log) { return $log->level == 'notice'; });
+        Log::assertNotLogged(function (LogEntry $log) {
+            return $log->level == 'notice';
+        });
         Notification::route('mail', $this->anonymousEmailAddress)
             ->notify(new TestNotification());
 
@@ -279,7 +282,8 @@ class RateLimitTest extends TestCase
 
         Log::assertLogged(
             function (LogEntry $log) {
-                $expected_key = Str::lower(config('laravel-notification-rate-limit.key_prefix') . '.TestNotification.customKey');
+                $expected_key = Str::lower(config('laravel-notification-rate-limit.key_prefix').'.TestNotification.customKey');
+
                 return $log->context['key'] === $expected_key;
             }
         );
