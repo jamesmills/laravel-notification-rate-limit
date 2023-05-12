@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Jamesmills\LaravelNotificationRateLimit\Events\NotificationRateLimitReached;
 use Jamesmills\LaravelNotificationRateLimit\RateLimitChannelManager;
+use TiMacDonald\Log\LogEntry;
 use TiMacDonald\Log\LogFake;
 
 class RateLimitTest extends TestCase
@@ -55,16 +56,23 @@ class RateLimitTest extends TestCase
         });
         // Ensure we are starting clean
         Log::swap(new LogFake);
-        Log::assertNotLogged('notice');
+        Log::assertNotLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
+
         // Send first notification and expect it to succeed
         $this->user->notify(new TestNotification());
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);
         // Send second notification and expect it to be skipped
-        Log::assertNotLogged('notice');
+        Log::assertNotLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
         $this->user->notify(new TestNotification());
         Event::assertDispatched(NotificationRateLimitReached::class);
-        Log::assertLogged('notice');
+        Log::assertLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
     }
 
     /** @test */
@@ -80,7 +88,9 @@ class RateLimitTest extends TestCase
 
         // Ensure we are starting clean
         Log::swap(new LogFake);
-        Log::assertNotLogged('notice');
+        Log::assertNotLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
         // Send first notification and expect it to succeed
         $this->user->notify(new TestNotification());
         Event::assertDispatched(NotificationSent::class);
@@ -90,10 +100,14 @@ class RateLimitTest extends TestCase
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);
         // Send a second notice to the first user and expect it to be skipped
-        Log::assertNotLogged('notice');
+        Log::assertNotLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
         $this->user->notify(new TestNotification());
         Event::assertDispatched(NotificationRateLimitReached::class);
-        Log::assertLogged('notice');
+        Log::assertLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
     }
 
     /** @test */
@@ -109,17 +123,23 @@ class RateLimitTest extends TestCase
         });
         // Ensure we are starting clean.
         Log::swap(new LogFake);
-        Log::assertNotLogged('notice');
+        Log::assertNotLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
         // Send first notification and expect it to succeed.
         $this->user->notify(new TestNotification());
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);
-        Log::assertNotLogged('notice');
+        Log::assertNotLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
         // Wait until the rate limiter has expired
         sleep(0.1);
         // Send another notification and expect it to succeed.
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);
-        Log::assertNotLogged('notice');
+        Log::assertNotLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
     }
 }

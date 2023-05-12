@@ -11,6 +11,15 @@
 
 Rate Limiting Notifications in Laravel using Laravel's native rate limiter to avoid flooding users with duplicate notifications.
 
+## Version Compatability
+
+| Laravel | Laravel-Notification-Rate-Limit |
+|:--------|:--------------------------------|
+| 7.x     | 1.0.0                           |
+| 8.x     | 1.1.0                           |
+| 9.x     | 2.x                             |
+| 10.x    | 2.x                             |
+
 ## Installation
 
 You can install the package via composer:
@@ -21,7 +30,7 @@ composer require jamesmills/laravel-notification-rate-limit
 
 ### Update your Notifications
     
-Add `ShouldRateLimit` and `RateLimitedNotification` to your the Notifications you would like to Raterate limit.
+Implement the `ShouldRateLimit` interface and add the `RateLimitedNotification` trait to the Notifications you would like to rate limit.
 
 ```php
 <?php
@@ -54,19 +63,19 @@ php artisan vendor:publish --provider="Jamesmills\LaravelNotificationRateLimit\L
     
 ## Options
     
-You can custom settings on an individual Notification level.
+You can customize settings on an individual Notification level.
     
 ### Events
 
-By default the `NotificationRateLimitReached` event will be fired when a Notification is skipped. You can customise this using the `event` option in the config.
+By default, the `NotificationRateLimitReached` event will be fired when a Notification is skipped. You can customise this using the `event` option in the config.
 
-### Overding the time the notification is rate limited for 
+### Overriding the time the notification is rate limited for 
 
-By default an throttled Notification will be throttled for `60` seconds. 
+By default, a rate-limited Notification will be rate-limited for `60` seconds. 
     
 Update globally with the `rate_limit_seconds` config setting.
 
-Update for an individual basis by adding the below to the Notification
+Update for an individual basis by adding the below to the Notification:
     
 ``` php
 // Change rate limit to 1 hour
@@ -75,24 +84,24 @@ protected $rateLimitForSeconds = 3600;
     
 ### Logging skipped notifications
 
-By default this package will log all skipped notifications.
+By default, this package will log all skipped notifications.
     
 Update globally with the `log_skipped_notifications` config setting.
     
-Update for an individual basis by adding the below to the Notification
+Update for an individual basis by adding the below to the Notification:
     
 ```php
 // Do not log skipped notifications
 protected $logSkippedNotifications = false;
 ```
     
-### Skipping uniqueue notifications
+### Skipping unique notifications
 
-By default the Rate Limiter uses a cache key made up of some opinionated defaults. One of these default keys is `serialize($notification)`. You may wish to turn this off. 
+By default, the Rate Limiter uses a cache key made up of some opinionated defaults. One of these default keys is `serialize($notification)`. You may wish to turn this off. 
 
 Update globally with the `should_rate_limit_unique_notifications` config setting.
 
-Update for an individual basis by adding the below to the Notification
+Update for an individual basis by adding the below to the Notification:
     
 ```php
 // Do not log skipped notifications
@@ -101,7 +110,7 @@ protected $shouldRateLimitUniqueNotifications = false;
 
 ### Customising the cache key
 
-You may want to customise the parts used in the cache key. You can do this by adding the below to your Notification.
+You may want to customise the parts used in the cache key. You can do this by adding the below to your Notification:
 
 ```php
 public function rateLimitCustomCacheKeyParts()
@@ -129,11 +138,12 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ### Security
 
-If you discover any security related issues, please email james@jamesmills.co.uk instead of using the issue tracker.
+If you discover any security related issues, please email anthony@trinimex.ca and james@jamesmills.co.uk instead of using the issue tracker.
 
 ## Credits
 
 - [James Mills](https://github.com/jamesmills)
+- [Anthony Tibbs](https://github.com/tibbsa)
 - [All Contributors](../../contributors)
 
 ## License (Treeware)
@@ -144,7 +154,7 @@ This package is [Treeware](https://treeware.earth). If you use it in production,
 
 ## Inspiration
 
-Inspiration for this package was taken from [Rate Limiting Notifications in Laravel](https://scottwakefield.co.uk/journal/rate-limiting-notifications-in-laravel/) by [Scott Wakefield](https://twitter.com/scottpwakefield)
+Inspiration for this package was taken from the article _Rate Limiting Notifications in Laravel_ by [Scott Wakefield](https://twitter.com/scottpwakefield) (now available only via the [Internet Archive's Wayback Machine](https://web.archive.org/web/20210303043709/https://scottwakefield.co.uk/journal/rate-limiting-notifications-in-laravel/)).
     
 ## Laravel Package Boilerplate
 
