@@ -3,7 +3,6 @@
 namespace Jamesmills\LaravelNotificationRateLimit;
 
 use Illuminate\Cache\RateLimiter;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 
 /**
@@ -18,15 +17,11 @@ trait RateLimitedNotification
      */
     public function rateLimitKey($notification, $notifiables)
     {
-//        echo '<pre>';
-//        var_dump($notification);
-//        exit;
-
         $parts = array_merge(
             [
                 config('laravel-notification-rate-limit.key_prefix'),
                 class_basename($notification),
-                $notifiables->id,
+                $this->determineNotifiableIdentifier($notifiables),
             ],
             $this->rateLimitCustomCacheKeyParts(),
             $this->rateLimitUniqueueNotifications($notification)
@@ -92,5 +87,28 @@ trait RateLimitedNotification
     public function shouldRateLimitUniqueNotifications()
     {
         return $this->shouldRateLimitUniqueNotifications ?? config('laravel-notification-rate-limit.should_rate_limit_unique_notifications');
+    }
+
+    protected function determineNotifiableIdentifier(mixed $notifiables)
+    {
+        $key = null;
+
+        if (method_exists($notifiables, 'rateLimitNotifiableKey')) {
+            $key = $notifiables->rateLimitNotifiableKey();
+        }
+
+        if (! $key && method_exists($notifiables, 'getKey')) {
+            $key = $notifiables->getKey();
+        }
+
+        if (! $key && property_exists($notifiables, 'id')) {
+            $key = $notifiables->id;
+        }
+
+        if (! $key) {
+            $key = md5(json_encode($notifiables));
+        }
+
+        return $key;
     }
 }
