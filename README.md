@@ -120,7 +120,28 @@ public function rateLimitCustomCacheKeyParts()
     ];
 }
 ```
+
+### Customizing the Notifiable identifier
+
+By default, we use the primary key or `$id` field on the Notifiable instance to identify the recipient of a notification. 
+If for some reason you do not want to use `$id`, you can add a `rateLimitNotifiableKey()` method to your `Notifiable` model 
+and return a string containing the key to use.  For example, if multiple users
+could belong to a group and you only want one person (any person) in the group to
+receive the notification, you might return the group ID instead of the user ID:
+
+```php
+class User extends Authenticatable
+{
+    use Notifiable;
+
+    protected $fillable = ['id', 'name', 'email', 'groupId'];
     
+    public function rateLimitNotifiableKey(): string
+    {
+        return $this->group_id;
+    }
+}
+```
 
 ### Testing
 
