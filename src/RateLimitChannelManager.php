@@ -2,9 +2,9 @@
 
 namespace Jamesmills\LaravelNotificationRateLimit;
 
-use Illuminate\Notifications\ChannelManager;
 use Illuminate\Database\Eloquent\Collection as ModelCollection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\Collection;
 
 class RateLimitChannelManager extends ChannelManager
@@ -16,7 +16,7 @@ class RateLimitChannelManager extends ChannelManager
         } else {
             $notifiables = $this->formatNotifiables($notifiables);
 
-            foreach($notifiables as $notifiable) {
+            foreach ($notifiables as $notifiable) {
                 if ($this->checkRateLimit($notifiable, $notification)) {
                     parent::send($notifiable, $notification);
                 }
@@ -44,6 +44,7 @@ class RateLimitChannelManager extends ChannelManager
         }
 
         $notification->limiter()->hit($key, $notification->rateLimitForSeconds());
+
         return true;
     }
 
