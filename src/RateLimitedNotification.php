@@ -92,15 +92,15 @@ trait RateLimitedNotification
             $key = $notifiable->rateLimitNotifiableKey();
         }
 
-        if (!$key && method_exists($notifiable, 'getKey')) {
+        if (! $key && method_exists($notifiable, 'getKey')) {
             $key = $notifiable->getKey();
         }
 
-        if (!$key && property_exists($notifiable, 'id')) {
+        if (! $key && property_exists($notifiable, 'id')) {
             $key = $notifiable->id;
         }
 
-        if (!$key) {
+        if (! $key) {
             $key = md5(json_encode($notifiable));
         }
 
