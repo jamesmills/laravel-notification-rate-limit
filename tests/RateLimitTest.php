@@ -55,7 +55,6 @@ class RateLimitTest extends TestCase
         Notification::send([$this->user], new TestNotification());
 
         Notification::assertSentTo([$this->user], TestNotification::class);
-        sleep(0.1);
     }
 
     public function it_can_send_an_anonymous_notification()
@@ -74,6 +73,78 @@ class RateLimitTest extends TestCase
                 return $notifiable->routes['mail'] == $this->anonymousEmailAddress;
             }
         );
+    }
+
+    /** @test */
+    public function it_can_send_notification_to_two_users(): void
+    {
+        Notification::fake();
+
+        Notification::assertNothingSent();
+
+        Notification::send([$this->user, $this->otherUser], new TestNotification());
+
+        Notification::assertSentTo([$this->user, $this->otherUser], TestNotification::class);
+    }
+
+    /** @test */
+    public function it_can_send_notification_to_two_ratelimited_users(): void
+    {
+        Event::fake();
+        Notification::fake();
+
+        Log::swap(new LogFake);
+        Log::assertNotLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
+
+        Notification::assertNothingSent();
+
+        // Have to call the RateLimitChannelManager directly as the facade is not testable
+        // e.g. Notification::send does not trigger the RateLimitChannelManager
+        $rateLimitChannelManager = new RateLimitChannelManager($this->app);
+        $rateLimitChannelManager->send([$this->user, $this->otherUser], new TestNotification());
+
+        Event::assertDispatchedTimes(NotificationSent::class, 2);
+        Event::assertNotDispatched(NotificationRateLimitReached::class);
+    }
+
+    /** @test */
+    public function it_can_rate_limit_multiple_recipient_notifications(): void
+    {
+        Config::set('laravel-notification-rate-limit.rate_limit_seconds', 1);
+
+        Event::fake();
+        Notification::fake();
+        Log::swap(new LogFake);
+
+        // Have to call the RateLimitChannelManager directly as the facade is not testable
+        // e.g. Notification::send does not trigger the RateLimitChannelManager
+        $rateLimitChannelManager = new RateLimitChannelManager($this->app);
+
+        // Send a notification to one user, and expect it to succeed
+        $rateLimitChannelManager->send($this->user, new TestNotification());
+        Event::assertDispatched(NotificationSent::class);
+        Event::assertNotDispatched(NotificationRateLimitReached::class);
+
+        // Send the same notification to two users, and expect it to only be sent to
+        // the second user
+        $rateLimitChannelManager->send([$this->user, $this->otherUser], new TestNotification());
+        Event::assertDispatchedTimes(NotificationSent::class, 2);
+        Event::assertDispatchedTimes(NotificationRateLimitReached::class, 1);
+
+        // Send the same notification again and nobody should get it (expect 2 limit reached events)
+        $rateLimitChannelManager->send([$this->user, $this->otherUser], new TestNotification());
+        Event::assertDispatchedTimes(NotificationSent::class, 2);
+        Event::assertDispatchedTimes(NotificationRateLimitReached::class, 3);
+
+        // Sleep to allow the timer to expire
+        sleep(2);
+
+        // Try to send again to both users; both should succeed
+        $rateLimitChannelManager->send([$this->user, $this->otherUser], new TestNotification());
+        Event::assertDispatchedTimes(NotificationSent::class, 4);
+        Event::assertDispatchedTimes(NotificationRateLimitReached::class, 3);
     }
 
     /** @test */
@@ -225,7 +296,7 @@ class RateLimitTest extends TestCase
         Event::fake();
         Notification::fake();
 
-        Config::set('laravel-notification-rate-limit.rate_limit_seconds', 0.1);
+        Config::set('laravel-notification-rate-limit.rate_limit_seconds', 1);
 
         $this->app->singleton(ChannelManager::class, function ($app) {
             return new RateLimitChannelManager($app);
@@ -243,7 +314,7 @@ class RateLimitTest extends TestCase
             fn (LogEntry $log) => $log->level === 'notice'
         );
         // Wait until the rate limiter has expired
-        sleep(0.1);
+        sleep(1);
         // Send another notification and expect it to succeed.
         Event::assertDispatched(NotificationSent::class);
         Event::assertNotDispatched(NotificationRateLimitReached::class);

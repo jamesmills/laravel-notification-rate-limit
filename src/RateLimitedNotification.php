@@ -10,18 +10,13 @@ use Illuminate\Support\Str;
  */
 trait RateLimitedNotification
 {
-    /**
-     * @param $notification
-     * @param $user
-     * @return string
-     */
-    public function rateLimitKey($notification, $notifiables)
+    public function rateLimitKey($notification, $notifiable): string
     {
         $parts = array_merge(
             [
                 config('laravel-notification-rate-limit.key_prefix'),
                 class_basename($notification),
-                $this->determineNotifiableIdentifier($notifiables),
+                $this->determineNotifiableIdentifier($notifiable),
             ],
             $this->rateLimitCustomCacheKeyParts(),
             $this->rateLimitUniqueueNotifications($notification)
@@ -89,24 +84,24 @@ trait RateLimitedNotification
         return $this->shouldRateLimitUniqueNotifications ?? config('laravel-notification-rate-limit.should_rate_limit_unique_notifications');
     }
 
-    protected function determineNotifiableIdentifier(mixed $notifiables)
+    protected function determineNotifiableIdentifier(mixed $notifiable): string
     {
         $key = null;
 
-        if (method_exists($notifiables, 'rateLimitNotifiableKey')) {
-            $key = $notifiables->rateLimitNotifiableKey();
+        if (method_exists($notifiable, 'rateLimitNotifiableKey')) {
+            $key = $notifiable->rateLimitNotifiableKey();
         }
 
-        if (! $key && method_exists($notifiables, 'getKey')) {
-            $key = $notifiables->getKey();
+        if (!$key && method_exists($notifiable, 'getKey')) {
+            $key = $notifiable->getKey();
         }
 
-        if (! $key && property_exists($notifiables, 'id')) {
-            $key = $notifiables->id;
+        if (!$key && property_exists($notifiable, 'id')) {
+            $key = $notifiable->id;
         }
 
-        if (! $key) {
-            $key = md5(json_encode($notifiables));
+        if (!$key) {
+            $key = md5(json_encode($notifiable));
         }
 
         return $key;
