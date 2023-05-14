@@ -3,7 +3,6 @@
 namespace Jamesmills\LaravelNotificationRateLimit\Tests;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades\Config;
@@ -94,13 +93,14 @@ class RateLimitTest extends TestCase
             NotificationSent::class,
             function (NotificationSent $ns) use (&$wasSent) {
                 $wasSent[$ns->notifiable->id] = true;
+
                 return $ns->notifiable->is($this->user) ||
                     $ns->notifiable->is($this->otherUser);
             }
         );
         $this->assertSame($wasSent, [
             $this->user->id => true,
-            $this->otherUser->id => true
+            $this->otherUser->id => true,
         ]);
     }
 
