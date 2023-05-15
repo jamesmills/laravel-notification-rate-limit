@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-notification-rate-limit` will be documented in this file
 
-## 2.0.0 - unreleased
+## 2.0.0 - 2023-05-15
 
 - Add support for Laravel 9.x/10.x
 - Remove support for PHP 7.x/Laravel 7.x/8.x
