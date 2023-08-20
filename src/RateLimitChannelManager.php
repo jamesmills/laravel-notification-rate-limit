@@ -2,6 +2,7 @@
 
 namespace Jamesmills\LaravelNotificationRateLimit;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection as ModelCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\ChannelManager;
@@ -11,16 +12,21 @@ class RateLimitChannelManager extends ChannelManager
 {
     public function send($notifiables, $notification): void
     {
-        if (! $notification instanceof ShouldRateLimit) {
-            parent::send($notifiables, $notification);
+        // If this notification is going to be queued, we do not check for rate limiting
+        // until the notification is actually picked up for sending in the queue via sendNow().
+        if ($notification instanceof ShouldRateLimit && ! $notification instanceof ShouldQueue) {
+            $this->sendWithRateLimitCheck($notifiables, $notification, 'send');
         } else {
-            $notifiables = $this->formatNotifiables($notifiables);
+            parent::send($notifiables, $notification);
+        }
+    }
 
-            foreach ($notifiables as $notifiable) {
-                if ($this->checkRateLimit($notifiable, $notification)) {
-                    parent::send($notifiable, $notification);
-                }
-            }
+    public function sendNow($notifiables, $notification, array $channels = null)
+    {
+        if ($notification instanceof ShouldRateLimit) {
+            $this->sendWithRateLimitCheck($notifiables, $notification, 'sendNow');
+        } else {
+            parent::sendNow($notifiables, $notification);
         }
     }
 
@@ -46,6 +52,17 @@ class RateLimitChannelManager extends ChannelManager
         $notification->limiter()->hit($key, $notification->rateLimitForSeconds());
 
         return true;
+    }
+
+    private function sendWithRateLimitCheck($notifiables, $notification, $sending_function)
+    {
+        $notifiables = $this->formatNotifiables($notifiables);
+
+        foreach ($notifiables as $notifiable) {
+            if ($this->checkRateLimit($notifiable, $notification)) {
+                parent::$sending_function($notifiable, $notification);
+            }
+        }
     }
 
     /**
