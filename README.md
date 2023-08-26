@@ -51,6 +51,10 @@ class NotifyUserOfOrderUpdateNotification extends Notification implements Should
 ...
 ```
 
+### Queued and delayed notifications
+
+**New since v2.1.0,** rate limiting is checked only when notifications are actually being delivered. If a notification is sent to a queue, or a notification is dispatched with a delay (e.g. `$user->notify($notification->delay(...))`), then any rate limiting will be considered only when the notification is actually dispatched to the user. (In prior versions, rate limiting did not work at all as expected for `delay()`'ed notifications.)
+
 ## Publish Config
     
 Everything in this package has opinionated global defaults. However, you can override everything in the config. 
@@ -123,10 +127,12 @@ public function rateLimitCustomCacheKeyParts()
 
 ### Customizing the Notifiable identifier
 
-By default, we use the primary key or `$id` field on the Notifiable instance to identify the recipient of a notification. 
+By default, we use the primary key or `$id` field on the `Notifiable` instance to identify the recipient of a notification.
+
 If for some reason you do not want to use `$id`, you can add a `rateLimitNotifiableKey()` method to your `Notifiable` model 
-and return a string containing the key to use.  For example, if multiple users
-could belong to a group and you only want one person (any person) in the group to
+and return a string containing the key to use.
+
+For example, if multiple users could belong to a group and you only want one person (any person) in the group to
 receive the notification, you might return the group ID instead of the user ID:
 
 ```php
@@ -180,7 +186,7 @@ class Agent extends Authenticatable
 composer test
 ```
 
-### Changelog
+## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
 
@@ -188,7 +194,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recen
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
-### Security
+## Security
 
 If you discover any security related issues, please email anthony@trinimex.ca and james@jamesmills.co.uk instead of using the issue tracker.
 
