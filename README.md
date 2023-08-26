@@ -143,7 +143,38 @@ class User extends Authenticatable
 }
 ```
 
-### Testing
+Similarly, if you have multiple models in your application that are `Notifiable`, using only the `id` 
+could result in collisions (where, for example, `Agent` #41 receives a notification that then precludes 
+`Customer` #41 from receiving a similar notification).  In this case, you may want to return an identifier 
+that also includes the class name in the key for each model:
+
+```php
+class Customer extends Authenticatable
+{
+    use Notifiable;
+
+    protected $fillable = ['id', 'name', 'email'];
+    
+    public function rateLimitNotifiableKey(): string
+    {
+        return get_class($this) . '#' . $this->id;
+    }
+}
+
+class Agent extends Authenticatable
+{
+    use Notifiable;
+
+    protected $fillable = ['id', 'name', 'email'];
+    
+    public function rateLimitNotifiableKey(): string
+    {
+        return get_class($this) . '#' . $this->id;
+    }
+}
+```
+
+## Testing
 
 ``` bash
 composer test
