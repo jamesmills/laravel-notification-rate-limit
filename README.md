@@ -17,8 +17,9 @@ Rate Limiting Notifications in Laravel using Laravel's native rate limiter to av
 |:--------|:--------------------------------|
 | 7.x     | 1.0.0                           |
 | 8.x     | 1.1.0                           |
-| 9.x     | 2.x                             |
-| 10.x    | 2.x                             |
+| 9.x     | 2.1.0                           |
+| 10.x    | 2.2.0                           |
+| 11.x    | 2.2.0                           |
 
 ## Installation
 
@@ -213,7 +214,4 @@ This package is [Treeware](https://treeware.earth). If you use it in production,
 ## Inspiration
 
 Inspiration for this package was taken from the article _Rate Limiting Notifications in Laravel_ by [Scott Wakefield](https://twitter.com/scottpwakefield) (now available only via the [Internet Archive's Wayback Machine](https://web.archive.org/web/20210303043709/https://scottwakefield.co.uk/journal/rate-limiting-notifications-in-laravel/)).
-    
-## Laravel Package Boilerplate
 
-This package was generated using the [Laravel Package Boilerplate](https://laravelpackageboilerplate.com).
