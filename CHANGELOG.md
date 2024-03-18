@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-notification-rate-limit` will be documented in this file
 
+## 2.2.0 - 2024-03-18
+
+- Added support for Laravel 11 (PHP 8.2/8.3)
+- Removed support for PHP 8.0/8.1 and Laravel 9.x
+
 ## 2.1.0 - 2023-08-26
 
 - Fixed [Issue #14](https://github.com/jamesmills/laravel-notification-rate-limit/issues/14): Rate limiting will now be checked when notifications are actually being dispatched from the queue, rather than when they are queued up (allowing rate limiting to work against notifications having an associated delay)
