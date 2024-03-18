@@ -22,7 +22,7 @@
     "require-dev": {
         "orchestra/testbench": "^8.0|^9.0",
         "phpunit/phpunit": "^10.0",
-        "timacdonald/log-fake": "dev-l11-compatibility"
+        "timacdonald/log-fake": "^2.2.0"
     },
     "autoload": {
         "psr-4": {
@@ -48,13 +48,5 @@
                 "Jamesmills\\LaravelNotificationRateLimit\\LaravelNotificationRateLimitServiceProvider"
             ]
         }
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/laravel-shift/log-fake.git"
-        }
-    ],
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
