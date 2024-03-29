@@ -18,5 +18,6 @@ class NotificationRateLimitReached
 
     public function __construct(
         public Notification $notification,
-    ) {}
+    ) {
+    }
 }
