@@ -35,8 +35,21 @@ class RateLimitChannelManager extends ChannelManager
         $key = $notification->rateLimitKey($notification, $notifiable);
 
         if ($notification->limiter()->tooManyAttempts($key, $notification->maxAttempts())) {
-            $event = config('laravel-notification-rate-limit.event');
-            event(new $event($notification));
+            // TODO: On next major version upgrade, change the event signature to
+            // include these additional fields.
+            $eventClass = config('laravel-notification-rate-limit.event');
+            $event = new $eventClass($notification);
+            if (property_exists($event, 'notifiable')) {
+                $event->notifiable = $notifiable;
+            }
+            if (property_exists($event, 'key')) {
+                $event->key = $key;
+            }
+            if (property_exists($event, 'availableIn')) {
+                $event->availableIn = $notification->limiter()->availableIn($key);
+            }
+
+            event($event);
 
             if ($notification->logSkippedNotifications()) {
                 \Log::notice('Skipping sending notification. Rate limit reached.', [
