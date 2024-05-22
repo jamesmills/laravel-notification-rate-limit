@@ -32,6 +32,7 @@ class TestNotificationWithCustomLimitHook extends Notification implements Should
     public function setCustomDiscard(bool $enable = true): self
     {
         $this->enableCustomDiscard = $enable;
+
         return $this;
     }
 

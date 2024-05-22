@@ -122,7 +122,7 @@ trait RateLimitedNotification
      * The string "Rate limit reached" (NotificationRateLimitReached::REASON_LIMITER)
      * is reserved as an indication that the rate limiter was hit.
      *
-     * @param string $key
+     * @param  string  $key
      * @return string|null
      */
     public function rateLimitCheckDiscard(string $key): ?string

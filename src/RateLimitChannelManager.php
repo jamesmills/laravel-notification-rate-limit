@@ -58,7 +58,7 @@ class RateLimitChannelManager extends ChannelManager
                     'notification' => class_basename($notification),
                     'reason' => $event->reason,
                     'availableIn' => $event->availableIn,
-                    'key' => $event->key
+                    'key' => $event->key,
                 ]);
             }
 

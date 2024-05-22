@@ -339,5 +339,4 @@ class RateLimitTest extends TestCase
             }
         );
     }
-
 }
