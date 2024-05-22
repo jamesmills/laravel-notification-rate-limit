@@ -106,4 +106,27 @@ trait RateLimitedNotification
 
         return $key;
     }
+
+    /**
+     * Provides the application with a hook to discard this notification for
+     * reasons other than the rate limiter being hit. Such a notification will
+     * not count as a hit against the rate limiter. A notification which is
+     * already being discarded due to the rate limiter being met will not be
+     * passed along to this function.
+     *
+     * Return a non-NULL string indicating the reason for the discard, and this
+     * will be logged (if logging is enabled) and passed along with the
+     * NotificationRateLimitReached event (if configured). Return NULL if the
+     * notification should otherwise be permitted to proceed.
+     *
+     * The string "Rate limit reached" (NotificationRateLimitReached::REASON_LIMITER)
+     * is reserved as an indication that the rate limiter was hit.
+     *
+     * @param string $key
+     * @return string|null
+     */
+    public function rateLimitCheckDiscard(string $key): ?string
+    {
+        return null;
+    }
 }

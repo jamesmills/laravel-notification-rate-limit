@@ -11,4 +11,5 @@ interface ShouldRateLimit
     public function maxAttempts();
 
     public function rateLimitForSeconds();
+    public function rateLimitCheckDiscard(string $key): ?string;
 }
