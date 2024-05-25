@@ -13,14 +13,15 @@ Rate Limiting Notifications in Laravel using Laravel's native rate limiter to av
 
 ## Version Compatability
 
-| Laravel | PHP     | Laravel-Notification-Rate-Limit | Date       |
-|:--------|:--------|:--------------------------------|:-----------|
-| 7.x     | 7.1/8.0 | 1.0.0                           | 2020-05-21 |
-| 8.x     | 7.1/8.0 | 1.1.0                           | 2021-05-20 |
-| 9.x     | 8.0     | 2.1.0                           | 2023-08-26 |
-| 10.x    | 8.0/8.1 | 2.1.0                           | 2023-08-26 |
-| 10.x    | 8.2/8.3 | 2.2.0                           | 2024-03-18 |
-| 11.x    | 8.2/8.3 | 2.2.0                           | 2024-03-18 |
+| Laravel | PHP     | Laravel-Notification-Rate-Limit | Date        |
+|:--------|:--------|:--------------------------------|:------------|
+| 7.x/8.x | 7.1/8.0 | 1.1.0                           | 2021-05-20  |
+| 9.x     | 8.0     | 2.1.0                           | 2023-08-26  |
+| 10.x    | 8.0/8.1 | 2.1.0                           | 2023-08-26  |
+| 10.x    | 8.2/8.3 | 2.2.0                           | 2024-03-18  |
+| 10.x    | 8.2/8.3 | 3.0.0                           | 2024-05-25  |
+| 11.x    | 8.2/8.3 | 2.2.0                           | 2024-03-18  |
+| 11.x    | 8.2/8.3 | 3.0.0                           | 2024-05-25  |
 
 ## Installation
 
@@ -53,28 +54,38 @@ class NotifyUserOfOrderUpdateNotification extends Notification implements Should
 ...
 ```
 
-### Queued and delayed notifications
-
-**New since v2.1.0,** rate limiting is checked only when notifications are actually being delivered. If a notification is sent to a queue, or a notification is dispatched with a delay (e.g. `$user->notify($notification->delay(...))`), then any rate limiting will be considered only when the notification is actually dispatched to the user. (In prior versions, rate limiting did not work at all as expected for `delay()`'ed notifications.)
-
-## Publish Config
+### Publish Config
     
-Everything in this package has opinionated global defaults. However, you can override everything in the config. 
+Everything in this package has opinionated global defaults. However, you can override everything in the config, and many options may also be further customized on a per-notification basis (see below). 
     
 Publish it using the command below.
 
 ```
 php artisan vendor:publish --provider="Jamesmills\LaravelNotificationRateLimit\LaravelNotificationRateLimitServiceProvider"
 ```
-    
+
+## Upgrading from 2.x
+
+If you are upgrading from version 2, be aware that the `NotificationRateLimitReached` event signature has changed, and now includes more information about the notification being skipped. If you have implemented your own version of this event class, you will need to update the constructor signature to accept these additional parameters. No other changes should be required as a part of the upgrade process.
+
+## Important considerations
+
+### Queued and delayed notifications
+
+Rate limiting is checked only when notifications are actually being delivered. 
+
+If a notification is sent to a queue, or a notification is dispatched with a delay (e.g. `$user->notify($notification->delay(...))`), then any rate limiting will be considered only when the notification is actually about to be dispatched to the user.
+ 
+### Identifier conflicts when using multiple types of Notifiable models
+
+If you have multiple models that use the Notifiable trait (e.g. multiple types of User models), you should add the class name of the Notifiable instance to the cache key (see [Customizing the Notifiasble identifier](#customizing-the-notifiable-identifier) below).
+
 ## Options
-    
-You can customize settings on an individual Notification level.
-    
+
 ### Events
 
 By default, the `NotificationRateLimitReached` event will be fired when a Notification is skipped. You can customise this using the `event` option in the config.
-
+    
 ### Overriding the time the notification is rate limited for 
 
 By default, a rate-limited Notification will be rate-limited for `60` seconds. 
@@ -110,13 +121,12 @@ Update globally with the `should_rate_limit_unique_notifications` config setting
 Update for an individual basis by adding the below to the Notification:
     
 ```php
-// Do not log skipped notifications
 protected $shouldRateLimitUniqueNotifications = false;
 ```
 
 ### Customising the cache key
 
-You may want to customise the parts used in the cache key. You can do this by adding the below to your Notification:
+You may want to customise the parts used in the cache key. You can do this by adding code such as the below to your Notification:
 
 ```php
 public function rateLimitCustomCacheKeyParts()
@@ -131,11 +141,9 @@ public function rateLimitCustomCacheKeyParts()
 
 By default, we use the primary key or `$id` field on the `Notifiable` instance to identify the recipient of a notification.
 
-If for some reason you do not want to use `$id`, you can add a `rateLimitNotifiableKey()` method to your `Notifiable` model 
-and return a string containing the key to use.
+If for some reason you do not want to use `$id`, you can add a `rateLimitNotifiableKey()` method to your `Notifiable` model and return a string containing the key to use.
 
-For example, if multiple users could belong to a group and you only want one person (any person) in the group to
-receive the notification, you might return the group ID instead of the user ID:
+For example, if multiple users could belong to a group and you only want one person (any person) in the group to receive the notification, you might return the group ID instead of the user ID:
 
 ```php
 class User extends Authenticatable
@@ -151,10 +159,7 @@ class User extends Authenticatable
 }
 ```
 
-Similarly, if you have multiple models in your application that are `Notifiable`, using only the `id` 
-could result in collisions (where, for example, `Agent` #41 receives a notification that then precludes 
-`Customer` #41 from receiving a similar notification).  In this case, you may want to return an identifier 
-that also includes the class name in the key for each model:
+Similarly, if you have multiple models in your application that are `Notifiable`, using only the `id` could result in collisions (where, for example, `Agent` #41 receives a notification that then precludes `Customer` #41 from receiving a similar notification).  In this case, you may want to return an identifier that also includes the class name in the key for each model:
 
 ```php
 class Customer extends Authenticatable
@@ -181,6 +186,42 @@ class Agent extends Authenticatable
     }
 }
 ```
+
+## Advanced Usage
+
+### Discarding a notification for application-defined reasons
+
+There may be circumstances where you wish to implement custom application logic for determining that a notification should be discarded even if the rate limiter itself would not prevent it from being sent (e.g. keeping track of, and setting an upper limit of, the number of times a given user can receive a specific notification in total).
+
+To do so, add a `rateLimitCheckDiscard` function to your notification, and return a non-NULL string to indicate the reason that a notification is being discarded. Example:
+
+```php
+public function rateLimitCheckDiscard(string $key): ?string
+{
+    $max_send_key = $key . '_send_count';
+    
+    $count = Cache::get($max_send_key, 0);
+    if ($count >= 3) {
+        return 'Max send limit reached';
+    }
+    
+    Cache::put($max_send_key, $count + 1);
+    return null;
+}
+```
+
+Notes:
+
+- The string 'Rate limit reached' (defined at `NotificationRateLimitReached::REASON_LIMITER`) is reserved to indicate that the rate limiter is preventing the notification from being dispatched.
+- If the rate limiter itself is preventing a notification from being dispatched, then the custom `rateLimitCheckDiscard` will not be called at all.
+- If `rateLimitCheckDiscard` returns a non-NULL string, then:
+    - the notification will *not* be dispatched and it will be discarded; and
+    - the attempt will *not* be counted as a 'hit' against the rate limiter itself.
+- The 'reason' returned from `rateLimitCheckDiscad` will be included in the log entry (if configured) and forwarded along to the `NotificationRateLimitReached` event as well.
+
+### Deferring (rather than discarding) a notification
+
+If you wish to defer/delay the delivery of a notification rather than completely discarding it (see [issue #33](https://github.com/jamesmills/laravel-notification-rate-limit/issues/33)), an example of one way that this could be implemented is available at <https://github.com/tibbsa/lnrl_deferral_example/>.
 
 ## Testing
 

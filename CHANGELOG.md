@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-notification-rate-limit` will be documented in this file
 
+## 3.0.0-RC1 - 2024-05-25
+
+- Expanded the `NotificationRateLimitReached` event to directly expose additional information about the notification being discarded (including the related `Notifiable` object, the cache key, the time remaining until the limiter will be available again, and the reason for the discard)
+- Added the ability for a notification to trigger a discard/bypass for reasons other than the rate limiter being hit (see [issue #37](https://github.com/jamesmills/laravel-notification-rate-limit/issues/37))
+
 ## 2.2.0 - 2024-03-18
 
 - Added support for Laravel 11 (PHP 8.2/8.3)

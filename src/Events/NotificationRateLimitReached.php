@@ -9,15 +9,16 @@ use Illuminate\Queue\SerializesModels;
 
 class NotificationRateLimitReached
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    public const REASON_LIMITER = 'Rate limit reached';
 
-    // TODO: Move to required constructor properties in a future major version upgrade
-    public mixed $notifiable = null;
-    public ?string $key = null;
-    public ?int $availableIn = null;
+    use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
         public Notification $notification,
+        public mixed $notifiable,
+        public string $key,
+        public int $availableIn,
+        public string $reason,
     ) {
     }
 }

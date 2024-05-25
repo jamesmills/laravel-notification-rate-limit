@@ -278,4 +278,65 @@ class RateLimitTest extends TestCase
             }
         );
     }
+
+    /** @test */
+    public function notification_rate_limited_event_contains_correct_details()
+    {
+        // Send notification and expect it to succeed.
+        $this->customRateLimitKeyUser->notify(new TestNotification());
+        Event::assertDispatched(NotificationSent::class);
+        Event::assertNotDispatched(NotificationRateLimitReached::class);
+        Log::assertNotLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
+
+        // Send a second notification and expect it to fail. Verify that
+        // the resulting notification event contains the right info.
+        $this->customRateLimitKeyUser->notify(new TestNotification());
+        Event::assertDispatched(
+            NotificationRateLimitReached::class,
+            function (NotificationRateLimitReached $event) {
+                return ($event->notification instanceof TestNotification)
+                    && ($event->notifiable->id === $this->customRateLimitKeyUser->id)
+                    && ($event->key === Str::lower(config('laravel-notification-rate-limit.key_prefix').'.TestNotification.customKey'))
+                    && ($event->reason === NotificationRateLimitReached::REASON_LIMITER);
+            }
+        );
+    }
+
+    /** @test */
+    public function custom_rate_limit_hook_is_honoured()
+    {
+        Config::set('laravel-notification-rate-limit.rate_limit_seconds', 1);
+
+        // Send notification and expect it to succeed.
+        $this->customRateLimitKeyUser->notify(new TestNotificationWithCustomLimitHook());
+        Event::assertDispatched(NotificationSent::class);
+        Event::assertNotDispatched(NotificationRateLimitReached::class);
+        Log::assertNotLogged(
+            fn (LogEntry $log) => $log->level === 'notice'
+        );
+
+        // wait 2 seconds to allow timer to lapse; should now be OK to send
+        sleep(2);
+
+        // Send a second notification and expect it to fail not because of
+        // the limiter, but because of the custom hook.
+        $n2 = new TestNotificationWithCustomLimitHook();
+        $n2->setCustomDiscard();
+
+        $this->customRateLimitKeyUser->notify($n2);
+        Log::assertLogged(
+            function (LogEntry $log) {
+                return $log->level === 'notice' && $log->context['reason'] === 'App-defined reason';
+            }
+        );
+        Event::assertDispatched(
+            NotificationRateLimitReached::class,
+            function (NotificationRateLimitReached $event) {
+                return ($event->notification instanceof TestNotificationWithCustomLimitHook)
+                    && ($event->reason === 'App-defined reason');
+            }
+        );
+    }
 }

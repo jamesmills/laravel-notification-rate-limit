@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection as ModelCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\Collection;
+use Jamesmills\LaravelNotificationRateLimit\Events\NotificationRateLimitReached;
 
 class RateLimitChannelManager extends ChannelManager
 {
@@ -21,7 +22,7 @@ class RateLimitChannelManager extends ChannelManager
         }
     }
 
-    public function sendNow($notifiables, $notification, array $channels = null)
+    public function sendNow($notifiables, $notification, array $channels = null): void
     {
         if ($notification instanceof ShouldRateLimit) {
             $this->sendWithRateLimitCheck($notifiables, $notification, 'sendNow');
@@ -35,27 +36,29 @@ class RateLimitChannelManager extends ChannelManager
         $key = $notification->rateLimitKey($notification, $notifiable);
 
         if ($notification->limiter()->tooManyAttempts($key, $notification->maxAttempts())) {
-            // TODO: On next major version upgrade, change the event signature to
-            // include these additional fields.
+            $limitReason = NotificationRateLimitReached::REASON_LIMITER;
+        } else {
+            $limitReason = $notification->rateLimitCheckDiscard($key);
+        }
+
+        if ($limitReason) {
             $eventClass = config('laravel-notification-rate-limit.event');
-            $event = new $eventClass($notification);
-            if (property_exists($event, 'notifiable')) {
-                $event->notifiable = $notifiable;
-            }
-            if (property_exists($event, 'key')) {
-                $event->key = $key;
-            }
-            if (property_exists($event, 'availableIn')) {
-                $event->availableIn = $notification->limiter()->availableIn($key);
-            }
+            $event = new $eventClass(
+                $notification,
+                $notifiable,
+                $key,
+                $notification->limiter()->availableIn($key),
+                $limitReason
+            );
 
             event($event);
 
             if ($notification->logSkippedNotifications()) {
-                \Log::notice('Skipping sending notification. Rate limit reached.', [
+                \Log::notice('Skipping sending notification.', [
                     'notification' => class_basename($notification),
-                    'availableIn' => $notification->limiter()->availableIn($key),
-                    'key' => $key,
+                    'reason' => $event->reason,
+                    'availableIn' => $event->availableIn,
+                    'key' => $event->key,
                 ]);
             }
 
@@ -67,7 +70,7 @@ class RateLimitChannelManager extends ChannelManager
         return true;
     }
 
-    private function sendWithRateLimitCheck($notifiables, $notification, $sending_function)
+    private function sendWithRateLimitCheck($notifiables, $notification, $sending_function): void
     {
         $notifiables = $this->formatNotifiables($notifiables);
 
