@@ -33,7 +33,7 @@ trait RateLimitedNotification
     public function rateLimitUniqueueNotifications($notification)
     {
         if ($this->shouldRateLimitUniqueNotifications() == true) {
-            return [serialize($notification)];
+            return [md5(serialize($notification))];
         }
 
         return [];
