@@ -342,7 +342,6 @@ class RateLimitTest extends TestCase
         );
     }
 
-
     /** @test */
     public function it_will_send_notifications_even_if_limiter_check_fails()
     {

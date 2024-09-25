@@ -15,7 +15,7 @@ class RateLimitChannelManager extends ChannelManager
     {
         // If this notification is going to be queued, we do not check for rate limiting
         // until the notification is actually picked up for sending in the queue via sendNow().
-        if ($notification instanceof ShouldRateLimit && !$notification instanceof ShouldQueue) {
+        if ($notification instanceof ShouldRateLimit && ! $notification instanceof ShouldQueue) {
             $this->sendWithRateLimitCheck($notifiables, $notification, 'send');
         } else {
             parent::send($notifiables, $notification);
@@ -86,14 +86,14 @@ class RateLimitChannelManager extends ChannelManager
             } catch (\Exception $e) {
                 $notification_type = get_class($notifiable);
 
-                logger()->warning('Notification rate limiter encountered an internal exception (notification type: ' . $notification_type . '); bypassing limiter. Error: ' . $e->getMessage());
+                logger()->warning('Notification rate limiter encountered an internal exception (notification type: '.$notification_type.'); bypassing limiter. Error: '.$e->getMessage());
                 report($e);
             }
 
-            if (!$sending_permitted) {
+            if (! $sending_permitted) {
                 continue;
             }
-            
+
             parent::$sending_function($notifiable, $notification);
         }
     }
@@ -105,7 +105,7 @@ class RateLimitChannelManager extends ChannelManager
      */
     protected function formatNotifiables(mixed $notifiables): ModelCollection|Collection|array
     {
-        if (!$notifiables instanceof Collection && !is_array($notifiables)) {
+        if (! $notifiables instanceof Collection && ! is_array($notifiables)) {
             return $notifiables instanceof Model
                 ? new ModelCollection([$notifiables]) : [$notifiables];
         }
