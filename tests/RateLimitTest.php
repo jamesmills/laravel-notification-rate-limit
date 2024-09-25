@@ -5,10 +5,12 @@ namespace Jamesmills\LaravelNotificationRateLimit\Tests;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Jamesmills\LaravelNotificationRateLimit\Events\NotificationRateLimitReached;
 use Jamesmills\LaravelNotificationRateLimit\RateLimitChannelManager;
@@ -338,5 +340,30 @@ class RateLimitTest extends TestCase
                     && ($event->reason === 'App-defined reason');
             }
         );
+    }
+
+
+    /** @test */
+    public function it_will_send_notifications_even_if_limiter_check_fails()
+    {
+        RateLimiter::shouldReceive('tooManyAttempts')
+            ->once()
+            ->andThrow(new \Exception('Simulated limiter failure'));
+
+        $this->user->notify(new TestNotification());
+
+        Log::assertLogged(
+            function (LogEntry $log) {
+                return $log->level === 'warning' &&
+                    str_contains(
+                        $log->message,
+                        'Simulated limiter failure'
+                    );
+            }
+        );
+
+        Event::assertDispatched(NotificationSent::class, function (NotificationSent $evt) {
+            return $evt->notifiable->is($this->user);
+        });
     }
 }
