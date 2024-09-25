@@ -42,7 +42,7 @@ trait RateLimitedNotification
             if ($strategy == 'serialize') {
                 return [$serialized_notification];
             } else {
-                if(! in_array($strategy, hash_algos())) {
+                if (! in_array($strategy, hash_algos())) {
                     throw new \Exception("Unsupported unique notification strategy hashing algorithm: $strategy");
                 }
 
@@ -97,7 +97,6 @@ trait RateLimitedNotification
     {
         return $this->shouldRateLimitUniqueNotifications ?? config('laravel-notification-rate-limit.should_rate_limit_unique_notifications');
     }
-
 
     /**
      * Returns the name of the hashing function to use for determining

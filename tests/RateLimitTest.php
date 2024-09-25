@@ -426,5 +426,4 @@ class RateLimitTest extends TestCase
             return $evt->notifiable->is($this->user);
         });
     }
-
 }
