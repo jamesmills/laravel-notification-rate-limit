@@ -13,15 +13,15 @@ Rate Limiting Notifications in Laravel using Laravel's native rate limiter to av
 
 ## Version Compatability
 
-| Laravel | PHP     | Laravel-Notification-Rate-Limit | Date        |
-|:--------|:--------|:--------------------------------|:------------|
-| 7.x/8.x | 7.1/8.0 | 1.1.0                           | 2021-05-20  |
-| 9.x     | 8.0     | 2.1.0                           | 2023-08-26  |
-| 10.x    | 8.0/8.1 | 2.1.0                           | 2023-08-26  |
-| 10.x    | 8.2/8.3 | 2.2.0                           | 2024-03-18  |
-| 10.x    | 8.2/8.3 | 3.0.0                           | 2024-05-25  |
-| 11.x    | 8.2/8.3 | 2.2.0                           | 2024-03-18  |
-| 11.x    | 8.2/8.3 | 3.0.0                           | 2024-05-25  |
+| Laravel | PHP     | Laravel-Notification-Rate-Limit | Date       |
+|:--------|:--------|:--------------------------------|:-----------|
+| 7.x/8.x | 7.1/8.0 | 1.1.0                           | 2021-05-20 |
+| 9.x     | 8.0     | 2.1.0                           | 2023-08-26 |
+| 10.x    | 8.0/8.1 | 2.1.0                           | 2023-08-26 |
+| 10.x    | 8.2/8.3 | 2.2.0                           | 2024-03-18 |
+| 10.x    | 8.2/8.3 | 3.0.0                           | 2024-05-25 |
+| 11.x    | 8.2/8.3 | 2.2.0                           | 2024-03-18 |
+| 11.x    | 8.2/8.3 | 3.1.0                           | 2024-09-25 |
 
 ## Installation
 
@@ -114,7 +114,13 @@ protected $logSkippedNotifications = false;
     
 ### Skipping unique notifications
 
-By default, the Rate Limiter uses a cache key made up of some opinionated defaults. One of these default keys is `serialize($notification)`. You may wish to turn this off. 
+When determining whether a notification is subject to rate limiting, the package must make a decision about whether the notification is in fact the same as a previously sent notification.
+
+By default, the Rate Limiter uses a cache key made up of some opinionated defaults. One of these default keys is `serialize($notification)`, such that all of the notification properties will be included in the cache key. While this may work fine for most users, some cache systems may have a hard limit on the length of cache keys, and large notifications containing a significant amount of data may exceed that (see GitHub issue #39 for example).
+
+#### Disabling 'unqiue notification' checks
+
+You may wish to turn this off altogether, and use your own logic to construct a custom cache key instead. 
 
 Update globally with the `should_rate_limit_unique_notifications` config setting.
 
@@ -124,7 +130,21 @@ Update for an individual basis by adding the below to the Notification:
 protected $shouldRateLimitUniqueNotifications = false;
 ```
 
-### Customising the cache key
+#### Changing the 'unique notification' cache key mechanism
+
+Rather than turning unique notification determinations altogether or constructing a completely custom cache key, you may also choose to use a 'hash' of the `seriralize()` notification rather than the raw `serialize()`'d string itself.
+
+You can choose to use `serialize`, or any of the hashing algorithms supported by your PHP installation. You can confirm the list of available hashing mechanisms by checking the output of `hash_algos()`, but this will generally include standard algorithms such as `md5`, `sha1`, `sha256`, and so forth.
+
+Update globally with the `unique_notification_strategy` config setting.
+
+Update for an individual basis by adding an alternative strategy with a line such as the below to the Notification:
+
+```php
+protected $rateLimitUniqueNotificationStrategy = 'md5';
+```
+
+### Further customising the cache key
 
 You may want to customise the parts used in the cache key. You can do this by adding code such as the below to your Notification:
 

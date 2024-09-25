@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Jamesmills\LaravelNotificationRateLimit\Events\NotificationRateLimitReached;
 use Jamesmills\LaravelNotificationRateLimit\RateLimitChannelManager;
+use PHPUnit\Util\Test;
 use TiMacDonald\Log\LogEntry;
 use TiMacDonald\Log\LogFake;
 
@@ -357,6 +358,66 @@ class RateLimitTest extends TestCase
                     str_contains(
                         $log->message,
                         'Simulated limiter failure'
+                    );
+            }
+        );
+
+        Event::assertDispatched(NotificationSent::class, function (NotificationSent $evt) {
+            return $evt->notifiable->is($this->user);
+        });
+    }
+
+    /** @test */
+    public function it_will_generate_keys_using_global_chosen_unique_strategy()
+    {
+        Config::set('laravel-notification-rate-limit.should_rate_limit_unique_notifications', true);
+        Config::set('laravel-notification-rate-limit.unique_notification_strategy', 'serialize');
+
+        $notification = new TestNotification();
+        $key = $notification->rateLimitKey($notification, $this->user);
+
+        $this->assertMatchesRegularExpression(
+            '/^laravelnotificationratelimit\.testnotification.(\d+)\.o:62:"jamesmills\\\\laravelnotificationratelimit\\\\tests\\\\testnotification":0:\{\}$/',
+            $key
+        );
+
+        Config::set('laravel-notification-rate-limit.unique_notification_strategy', 'md5');
+        $key = $notification->rateLimitKey($notification, $this->user);
+        $this->assertMatchesRegularExpression(
+            '/^laravelnotificationratelimit\.testnotification.(\d+)\.e31474a75e8f94b93f99a4663a827b33$/',
+            $key
+        );
+    }
+
+    /** @test */
+    public function it_will_generate_keys_using_chosen_unique_strategy()
+    {
+        Config::set('laravel-notification-rate-limit.should_rate_limit_unique_notifications', true);
+        Config::set('laravel-notification-rate-limit.unique_notification_strategy', 'serialize');
+
+        $notification = new TestNotificationWithCustomUniqueAlgorithm();
+        $key = $notification->rateLimitKey($notification, $this->user);
+        $this->assertMatchesRegularExpression(
+            '/^laravelnotificationratelimit\.testnotificationwithcustomuniquealgorithm.(\d+)\.9f528a27c960ee1a6b1fd7db8a9a3694$/',
+            $key
+        );
+    }
+
+    /** @test */
+    public function it_will_error_if_invalid_unique_strategy_chosen()
+    {
+        Config::set('laravel-notification-rate-limit.should_rate_limit_unique_notifications', true);
+        Config::set('laravel-notification-rate-limit.unique_notification_strategy', 'invalid_hash_algo');
+
+        $this->user->notify(new TestNotification());
+
+        // Ensure we are at least logging that there was an issue
+        Log::assertLogged(
+            function (LogEntry $log) {
+                return $log->level === 'warning' &&
+                    str_contains(
+                        $log->message,
+                        'invalid_hash_algo'
                     );
             }
         );

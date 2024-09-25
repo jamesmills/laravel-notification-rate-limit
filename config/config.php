@@ -51,17 +51,40 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Rate Limit Uniqueue Notifications
+    | Rate Limit Unique Notifications
     |--------------------------------------------------------------------------
     |
-    | By default one of the cache keys is a seralised string of the
-    | notification. This means that every property of the notification
-    | is used as the cache key. You can disable this if you want
-    | to have full control of what key is used.
+    | Enable this if you wish to rate limit unique notifications. This will
+    | allow multiple notifications of the same notification class to be sent,
+    | but only if the contents of the notifications is determined to be
+    | different in some way. Various strategies are offered for how this
+    | "unique" cache key is generated (see below). If you want full control
+    | over the cache key that is used to determine uniqueness, turn this off.
     |
     */
 
     'should_rate_limit_unique_notifications' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Unique Notification Identification Strategy
+    |--------------------------------------------------------------------------
+    |
+    | If `should_rate_limit_unique_notifications` is set to true above, you
+    | can choose from one of several strategies that will be used to determine
+    | whether a given notification is or is not 'unique'.
+    |
+    | By default one of the cache keys is a seralised string of the
+    | notification. This means that every property of the notification
+    | is used as the cache key. Some cache systems may have a hard limit
+    | on the length of keys, so using a hashed key may be preferable.
+    |
+    | The strategy can either be 'serialize' (which uses the serialized
+    | text of the entire notification as a string), or one of the hashing
+    | algorithms available as reported by PHP's hash_algos(), e.g. md5, sha1.
+    */
+
+    'unique_notification_strategy' => 'serialize',
 
     /*
     |--------------------------------------------------------------------------
