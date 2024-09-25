@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-notification-rate-limit` will be documented in this file
 
+## 3.1.0 - 2024-09-25
+
+- Fixed: If an exception occurs within the rate limiter implementation, it will be logged and reported but we try to continue sending the notification itself (irrespective of any rate limit that might have applied). (See https://github.com/jamesmills/laravel-notification-rate-limit/issues/39)
+- New: Added config option `unique_notification_strategy` to allow choosing the mechanism to use when determining whether a notification is unique (in case `serialize()` is not appropriate).
+
 ## 3.0.0 - 2024-05-25
 
 - Expanded the `NotificationRateLimitReached` event to directly expose additional information about the notification being discarded (including the related `Notifiable` object, the cache key, the time remaining until the limiter will be available again, and the reason for the discard)
