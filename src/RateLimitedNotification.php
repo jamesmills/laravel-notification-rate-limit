@@ -30,10 +30,24 @@ trait RateLimitedNotification
         return [];
     }
 
+    /**
+     * @throws \Exception
+     */
     public function rateLimitUniqueueNotifications($notification)
     {
         if ($this->shouldRateLimitUniqueNotifications() == true) {
-            return [serialize($notification)];
+            $strategy = $this->rateLimitUniqueNotificationStrategy();
+            $serialized_notification = serialize($notification);
+
+            if ($strategy == 'serialize') {
+                return [$serialized_notification];
+            } else {
+                if(! in_array($strategy, hash_algos())) {
+                    throw new \Exception("Unsupported unique notification strategy hashing algorithm: $strategy");
+                }
+
+                return [hash($strategy, $serialized_notification)];
+            }
         }
 
         return [];
@@ -82,6 +96,17 @@ trait RateLimitedNotification
     public function shouldRateLimitUniqueNotifications()
     {
         return $this->shouldRateLimitUniqueNotifications ?? config('laravel-notification-rate-limit.should_rate_limit_unique_notifications');
+    }
+
+
+    /**
+     * Returns the name of the hashing function to use for determining
+     * whether this notification is unique or 'serialize' to use the entire
+     * serialized text of the notificaiton.
+     */
+    public function rateLimitUniqueNotificationStrategy(): string
+    {
+        return $this->rateLimitUniqueNotificationStrategy ?? config('laravel-notification-rate-limit.unique_notification_strategy');
     }
 
     protected function determineNotifiableIdentifier(mixed $notifiable): string
