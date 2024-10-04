@@ -16,7 +16,7 @@ class RateLimitChannelManager extends ChannelManager
         // If this notification is going to be queued, we do not check for rate limiting
         // until the notification is actually picked up for sending in the queue via sendNow().
         if ($notification instanceof ShouldRateLimit && ! $notification instanceof ShouldQueue) {
-            $this->sendWithRateLimitCheck($notifiables, $notification, 'send');
+            $this->sendWithRateLimitCheck('send', $notifiables, $notification);
         } else {
             parent::send($notifiables, $notification);
         }
@@ -25,9 +25,9 @@ class RateLimitChannelManager extends ChannelManager
     public function sendNow($notifiables, $notification, array $channels = null): void
     {
         if ($notification instanceof ShouldRateLimit) {
-            $this->sendWithRateLimitCheck($notifiables, $notification, 'sendNow');
+            $this->sendWithRateLimitCheck('sendNow', $notifiables, $notification, $channels);
         } else {
-            parent::sendNow($notifiables, $notification);
+            parent::sendNow($notifiables, $notification, $channels);
         }
     }
 
@@ -70,7 +70,7 @@ class RateLimitChannelManager extends ChannelManager
         return true;
     }
 
-    private function sendWithRateLimitCheck($notifiables, $notification, $sending_function): void
+    private function sendWithRateLimitCheck($sending_function, $notifiables, $notification, $channels = null): void
     {
         $notifiables = $this->formatNotifiables($notifiables);
 
@@ -94,7 +94,11 @@ class RateLimitChannelManager extends ChannelManager
                 continue;
             }
 
-            parent::$sending_function($notifiable, $notification);
+            if ($sending_function == 'sendNow') {
+                parent::sendNow($notifiable, $notification, $channels);
+            } else {
+                parent::send($notifiable, $notification);
+            }
         }
     }
 
