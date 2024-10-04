@@ -426,4 +426,32 @@ class RateLimitTest extends TestCase
             return $evt->notifiable->is($this->user);
         });
     }
+
+    /** @test */
+    public function it_will_sendnow_only_to_requested_channels_nonratelimited()
+    {
+        // By default we try to send to a channel that will fail, if our sendNow
+        // implementation is not respecting the requested channels.
+        $notification = new TestMultichannelNonRateLimitedNotification(['non-existent-channel']);
+
+        $this->user->notifyNow($notification, ['mail']);
+
+        Event::assertDispatched(NotificationSent::class, function (NotificationSent $evt) {
+            return $evt->notifiable->is($this->user) && $evt->channel == 'mail';
+        });
+    }
+
+    /** @test */
+    public function it_will_sendnow_only_to_requested_channels_ratelimited()
+    {
+        // By default we try to send to a channel that will fail, if our sendNow
+        // implementation is not respecting the requested channels.
+        $notification = new TestMultichannelNotification(['non-existent-channel']);
+
+        $this->user->notifyNow($notification, ['mail']);
+
+        Event::assertDispatched(NotificationSent::class, function (NotificationSent $evt) {
+            return $evt->notifiable->is($this->user) && $evt->channel == 'mail';
+        });
+    }
 }
