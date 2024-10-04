@@ -94,7 +94,7 @@ class RateLimitChannelManager extends ChannelManager
                 continue;
             }
 
-            if ($sending_function == "sendNow") {
+            if ($sending_function == 'sendNow') {
                 parent::sendNow($notifiable, $notification, $channels);
             } else {
                 parent::$sending_function($notifiable, $notification);
