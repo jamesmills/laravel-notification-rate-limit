@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-notification-rate-limit` will be documented in this file
 
+## 3.1.1 - 2024-10-04
+
+- Fixed: When sending a rate-limited or non-rate-limited notification, the channel manager will now respect the `$channels` parameter when using  `sendNow()` or `notifyNow()`. Thanks to [@felipehertzer](https://github.com/felipehertzer]) for the [PR](https://github.com/jamesmills/laravel-notification-rate-limit/pull/45).
+ 
 ## 3.1.0 - 2024-09-25
 
 - Fixed: If an exception occurs within the rate limiter implementation, it will be logged and reported but we try to continue sending the notification itself (irrespective of any rate limit that might have applied). (See https://github.com/jamesmills/laravel-notification-rate-limit/issues/39)

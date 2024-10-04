@@ -21,7 +21,7 @@ Rate Limiting Notifications in Laravel using Laravel's native rate limiter to av
 | 10.x    | 8.2/8.3 | 2.2.0                           | 2024-03-18 |
 | 10.x    | 8.2/8.3 | 3.0.0                           | 2024-05-25 |
 | 11.x    | 8.2/8.3 | 2.2.0                           | 2024-03-18 |
-| 11.x    | 8.2/8.3 | 3.1.0                           | 2024-09-25 |
+| 11.x    | 8.2/8.3 | 3.1.1                           | 2024-10-04 |
 
 ## Installation
 
