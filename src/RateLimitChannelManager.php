@@ -22,7 +22,7 @@ class RateLimitChannelManager extends ChannelManager
         }
     }
 
-    public function sendNow($notifiables, $notification, array $channels = null): void
+    public function sendNow($notifiables, $notification, ?array $channels = null): void
     {
         if ($notification instanceof ShouldRateLimit) {
             $this->sendWithRateLimitCheck('sendNow', $notifiables, $notification, $channels);
@@ -70,7 +70,7 @@ class RateLimitChannelManager extends ChannelManager
         return true;
     }
 
-    private function sendWithRateLimitCheck($sending_function, $notifiables, $notification, $channels = null): void
+    private function sendWithRateLimitCheck($sending_function, $notifiables, $notification, ?array $channels = null): void
     {
         $notifiables = $this->formatNotifiables($notifiables);
 
