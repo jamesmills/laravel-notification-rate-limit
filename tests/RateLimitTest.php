@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Jamesmills\LaravelNotificationRateLimit\Events\NotificationRateLimitReached;
 use Jamesmills\LaravelNotificationRateLimit\RateLimitChannelManager;
-use PHPUnit\Util\Test;
+use PHPUnit\Framework\Attributes\Test;
 use TiMacDonald\Log\LogEntry;
 use TiMacDonald\Log\LogFake;
 
@@ -62,7 +62,7 @@ class RateLimitTest extends TestCase
         $this->rateLimitChannelManager = app(ChannelManager::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_send_a_notification()
     {
         $this->user->notify(new TestNotification());
@@ -71,7 +71,7 @@ class RateLimitTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_can_send_an_anonymous_notification()
     {
         Notification::route('mail', $this->anonymousEmailAddress)
@@ -85,7 +85,7 @@ class RateLimitTest extends TestCase
         Event::assertNotDispatched(NotificationRateLimitReached::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_send_notification_to_two_users(): void
     {
         $this->rateLimitChannelManager->send([$this->user, $this->otherUser], new TestNotification());
@@ -107,7 +107,7 @@ class RateLimitTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_rate_limit_multiple_recipient_notifications(): void
     {
         Config::set('laravel-notification-rate-limit.rate_limit_seconds', 1);
@@ -137,7 +137,7 @@ class RateLimitTest extends TestCase
         Event::assertDispatchedTimes(NotificationRateLimitReached::class, 3);
     }
 
-    /** @test */
+    #[Test]
     public function it_will_skip_notifications_until_limit_expires()
     {
         // Send first notification and expect it to succeed
@@ -156,7 +156,7 @@ class RateLimitTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_will_skip_notifications_to_anonymous_users_until_limit_expires()
     {
         // Send first notification and expect it to succeed
@@ -177,7 +177,7 @@ class RateLimitTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_get_confused_between_multiple_users()
     {
         // Send first notification and expect it to succeed
@@ -204,7 +204,7 @@ class RateLimitTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_get_confused_between_multiple_anonymous_users()
     {
         // Send first notification and expect it to succeed
@@ -234,7 +234,7 @@ class RateLimitTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_will_resume_notifications_after_expiration()
     {
         Config::set('laravel-notification-rate-limit.rate_limit_seconds', 1);
@@ -258,7 +258,7 @@ class RateLimitTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_will_utilize_custom_rate_limit_keys()
     {
         // Send notification and expect it to succeed.
@@ -282,7 +282,7 @@ class RateLimitTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function notification_rate_limited_event_contains_correct_details()
     {
         // Send notification and expect it to succeed.
@@ -307,7 +307,7 @@ class RateLimitTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function custom_rate_limit_hook_is_honoured()
     {
         Config::set('laravel-notification-rate-limit.rate_limit_seconds', 1);
@@ -343,7 +343,7 @@ class RateLimitTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_will_send_notifications_even_if_limiter_check_fails()
     {
         RateLimiter::shouldReceive('tooManyAttempts')
@@ -367,7 +367,7 @@ class RateLimitTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_will_generate_keys_using_global_chosen_unique_strategy()
     {
         Config::set('laravel-notification-rate-limit.should_rate_limit_unique_notifications', true);
@@ -389,7 +389,7 @@ class RateLimitTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_will_generate_keys_using_chosen_unique_strategy()
     {
         Config::set('laravel-notification-rate-limit.should_rate_limit_unique_notifications', true);
@@ -403,7 +403,7 @@ class RateLimitTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_will_error_if_invalid_unique_strategy_chosen()
     {
         Config::set('laravel-notification-rate-limit.should_rate_limit_unique_notifications', true);
@@ -427,7 +427,7 @@ class RateLimitTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_will_sendnow_only_to_requested_channels_nonratelimited()
     {
         // By default we try to send to a channel that will fail, if our sendNow
@@ -441,7 +441,7 @@ class RateLimitTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_will_sendnow_only_to_requested_channels_ratelimited()
     {
         // By default we try to send to a channel that will fail, if our sendNow
