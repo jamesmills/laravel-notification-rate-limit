@@ -2,6 +2,18 @@
 
 All notable changes to `laravel-notification-rate-limit` will be documented in this file
 
+## 3.3.0 - 2026-03-22
+
+- New: Added support for Laravel 13 (PHP 8.3/8.4)
+
+## 3.2.1 - 2025-08-15
+
+- Fixed: Cleaned up 'implicitly missing' parameter warning on sendNow/sendWithRateLimitCheck in PHP 8.4
+
+## 3.2.0 - 2025-03-11
+
+- New: Added support for Laravel 12 (PHP 8.2/8.3)
+
 ## 3.1.1 - 2024-10-04
 
 - Fixed: When sending a rate-limited or non-rate-limited notification, the channel manager will now respect the `$channels` parameter when using  `sendNow()` or `notifyNow()`. Thanks to [@felipehertzer](https://github.com/felipehertzer]) for the [PR](https://github.com/jamesmills/laravel-notification-rate-limit/pull/45).
