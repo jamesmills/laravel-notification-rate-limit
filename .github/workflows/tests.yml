@@ -13,19 +13,11 @@ jobs:
       fail-fast: false
       matrix:
         php: [8.2, 8.3, 8.4]
-        laravel: [10.*, 11.*, 12.*, 13.*]
+        laravel: [12.*, 13.*]
         exclude:
           - php: 8.2
             laravel: 13.*
         include:
-          - laravel: 10.*
-            testbench: 8.*
-            phpunit: 10.*
-            logfake: 2.3.0
-          - laravel: 11.*
-            testbench: 9.*
-            phpunit: 11.*
-            logfake: ^2.4
           - laravel: 12.*
             testbench: 10.*
             phpunit: 11.*
