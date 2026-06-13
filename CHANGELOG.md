@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-notification-rate-limit` will be documented in this file
 
+## 4.0.0 - 2026-06-13
+
+- Removed support for Laravel 10.x and 11.x. Both have reached end of security support (Laravel 10 in February 2025, Laravel 11 in March 2026); recent framework security advisories are unpatched on those branches, so they can no longer be installed or tested here. Users who still require Laravel 10 or 11 should pin to `3.3.0`, the last release to support them.
+
 ## 3.3.0 - 2026-03-22
 
 - New: Added support for Laravel 13 (PHP 8.3/8.4)
