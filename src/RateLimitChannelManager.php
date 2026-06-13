@@ -31,11 +31,11 @@ class RateLimitChannelManager extends ChannelManager
         }
     }
 
-    private function checkRateLimit($notifiable, $notification): bool
+    private function checkRateLimit($notifiable, $notification, ?string $channel = null): bool
     {
-        $key = $notification->rateLimitKey($notification, $notifiable);
+        $key = $notification->rateLimitKey($notification, $notifiable, $channel);
 
-        if ($notification->limiter()->tooManyAttempts($key, $notification->maxAttempts())) {
+        if ($notification->limiter()->tooManyAttempts($key, $notification->maxAttempts($channel))) {
             $limitReason = NotificationRateLimitReached::REASON_LIMITER;
         } else {
             $limitReason = $notification->rateLimitCheckDiscard($key);
@@ -48,7 +48,8 @@ class RateLimitChannelManager extends ChannelManager
                 $notifiable,
                 $key,
                 $notification->limiter()->availableIn($key),
-                $limitReason
+                $limitReason,
+                $channel
             );
 
             event($event);
@@ -59,13 +60,14 @@ class RateLimitChannelManager extends ChannelManager
                     'reason' => $event->reason,
                     'availableIn' => $event->availableIn,
                     'key' => $event->key,
+                    'channel' => $channel,
                 ]);
             }
 
             return false;
         }
 
-        $notification->limiter()->hit($key, $notification->rateLimitForSeconds());
+        $notification->limiter()->hit($key, $notification->rateLimitForSeconds($channel));
 
         return true;
     }
@@ -74,23 +76,30 @@ class RateLimitChannelManager extends ChannelManager
     {
         $notifiables = $this->formatNotifiables($notifiables);
 
-        // Send each notification, but protect against the possibility that the
-        // rate limiter itself might fail (e.g. due to the cache service not being
-        // available, or refusing to accept a cache key).  If our own
-        // rate limiting logic fails for some reason, we send the notification anyway.
         foreach ($notifiables as $notifiable) {
-            $sending_permitted = true;
+            // Per-channel mode: resolve the channels for this notifiable and
+            // evaluate the rate limiter once per channel, delivering each channel
+            // on its own counter. Explicitly requested channels win over via().
+            if ($notification->rateLimitPerChannel()) {
+                $viaChannels = $channels ?: $notification->via($notifiable);
 
-            try {
-                $sending_permitted = $this->checkRateLimit($notifiable, $notification);
-            } catch (\Exception $e) {
-                $notification_type = get_class($notifiable);
+                if (empty($viaChannels)) {
+                    continue;
+                }
 
-                logger()->warning('Notification rate limiter encountered an internal exception (notification type: '.$notification_type.'); bypassing limiter. Error: '.$e->getMessage());
-                report($e);
+                foreach ((array) $viaChannels as $channel) {
+                    if ($this->rateLimitPermitsSending($notifiable, $notification, $channel)) {
+                        // A non-queued send() is equivalent to an immediate
+                        // single-channel sendNow(), so both paths deliver here.
+                        parent::sendNow($notifiable, $notification, [$channel]);
+                    }
+                }
+
+                continue;
             }
 
-            if (! $sending_permitted) {
+            // Default mode: a single channel-agnostic check covers all channels.
+            if (! $this->rateLimitPermitsSending($notifiable, $notification, null)) {
                 continue;
             }
 
@@ -99,6 +108,25 @@ class RateLimitChannelManager extends ChannelManager
             } else {
                 parent::send($notifiable, $notification);
             }
+        }
+    }
+
+    /**
+     * Run the rate-limit check, protecting against the possibility that the
+     * limiter itself fails (e.g. the cache backend is unavailable or rejects the
+     * key). If our own limiting logic throws, we log/report and send anyway.
+     */
+    private function rateLimitPermitsSending($notifiable, $notification, ?string $channel = null): bool
+    {
+        try {
+            return $this->checkRateLimit($notifiable, $notification, $channel);
+        } catch (\Exception $e) {
+            $notification_type = get_class($notifiable);
+
+            logger()->warning('Notification rate limiter encountered an internal exception (notification type: '.$notification_type.'); bypassing limiter. Error: '.$e->getMessage());
+            report($e);
+
+            return true;
         }
     }
 

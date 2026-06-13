@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
  */
 trait RateLimitedNotification
 {
-    public function rateLimitKey($notification, $notifiable): string
+    public function rateLimitKey($notification, $notifiable, ?string $channel = null): string
     {
         $parts = array_merge(
             [
@@ -18,6 +18,7 @@ trait RateLimitedNotification
                 class_basename($notification),
                 $this->determineNotifiableIdentifier($notifiable),
             ],
+            $channel !== null ? [$channel] : [],
             $this->rateLimitCustomCacheKeyParts(),
             $this->rateLimitUniqueueNotifications($notification)
         );
@@ -66,9 +67,13 @@ trait RateLimitedNotification
     /**
      * Max attempts to accept in the throttled timeframe.
      *
+     * In per-channel mode the channel being evaluated is passed in, so this may
+     * be overridden to return a different limit per channel. The default
+     * implementation applies the same limit to every channel.
+     *
      * @return \Illuminate\Config\Repository|mixed
      */
-    public function maxAttempts()
+    public function maxAttempts(?string $channel = null)
     {
         return $this->maxAttempts ?? config('laravel-notification-rate-limit.max_attempts');
     }
@@ -76,9 +81,13 @@ trait RateLimitedNotification
     /**
      * Time in seconds to throttle the notifications.
      *
+     * In per-channel mode the channel being evaluated is passed in, so this may
+     * be overridden to return a different window per channel. The default
+     * implementation applies the same window to every channel.
+     *
      * @return \Illuminate\Config\Repository|mixed
      */
-    public function rateLimitForSeconds()
+    public function rateLimitForSeconds(?string $channel = null)
     {
         return $this->rateLimitForSeconds ?? config('laravel-notification-rate-limit.rate_limit_seconds');
     }
@@ -91,6 +100,17 @@ trait RateLimitedNotification
     public function logSkippedNotifications()
     {
         return $this->logSkippedNotifications ?? config('laravel-notification-rate-limit.log_skipped_notifications');
+    }
+
+    /**
+     * Whether rate limiting is evaluated independently per notification
+     * channel rather than once for the whole notification.
+     *
+     * @return \Illuminate\Config\Repository|mixed
+     */
+    public function rateLimitPerChannel()
+    {
+        return $this->rateLimitPerChannel ?? config('laravel-notification-rate-limit.rate_limit_per_channel');
     }
 
     public function shouldRateLimitUniqueNotifications()
