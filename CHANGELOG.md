@@ -5,6 +5,15 @@ All notable changes to `laravel-notification-rate-limit` will be documented in t
 ## 4.0.0 - 2026-06-13
 
 - Removed support for Laravel 10.x and 11.x. Both have reached end of security support (Laravel 10 in February 2025, Laravel 11 in March 2026); recent framework security advisories are unpatched on those branches, so they can no longer be installed or tested here. Users who still require Laravel 10 or 11 should pin to `3.3.0`, the last release to support them.
+- New: Per-channel rate limiting. Each delivery channel of a notification is rate limited on its own independent counter. The channel being evaluated is passed to `maxAttempts()`, `rateLimitForSeconds()` and `rateLimitKey()`, so a notification can give each channel its own limit, window and cache key, and the channel is exposed on the `NotificationRateLimitReached` event and the skipped-notification log context. (See [issue #50](https://github.com/jamesmills/laravel-notification-rate-limit/issues/50))
+
+  > ⚠️ **Behaviour change — please read.** Per-channel rate limiting is **enabled by default** as of `4.0.0`.
+  >
+  > **What changed.** In earlier versions a single rate-limit counter covered *every* channel a notification was delivered on. Now each channel is counted and limited independently, and the channel name is included in the cache key.
+  >
+  > **Why.** With one shared counter, a notification dispatched to several channels could deliver only the channel that happened to be evaluated first and silently suppress the rest. This was most visible with **queued** notifications, which Laravel dispatches as one job per channel — so the second and later channels were dropped. The ordinary expectation is that every requested channel is delivered, so `4.0.0` makes per-channel counting the default.
+  >
+  > **How to restore the previous behaviour.** Set `'rate_limit_per_channel' => false` in `config/laravel-notification-rate-limit.php` (publish the config first if you have not already), or add `protected $rateLimitPerChannel = false;` to an individual notification.
 
 ## 3.3.0 - 2026-03-22
 
