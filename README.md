@@ -65,6 +65,12 @@ Publish it using the command below.
 php artisan vendor:publish --provider="Jamesmills\LaravelNotificationRateLimit\LaravelNotificationRateLimitServiceProvider"
 ```
 
+## Upgrading from 3.x and below
+
+As of `4.0.0`, notifications are rate limited **per channel by default** — each delivery channel of a notification has its own rate-limit counter, where previously a single counter covered every channel a notification was delivered on. This means a notification dispatched to several channels now reaches all of them, rather than just whichever channel happened to be evaluated first; this is most noticeable for **queued** notifications, where the second and later channels were previously suppressed.
+
+To restore the previous behaviour, set `rate_limit_per_channel` to `false` in the config, or add `protected $rateLimitPerChannel = false;` to an individual notification. See the [CHANGELOG](CHANGELOG.md) and [Rate limiting per channel](#rate-limiting-per-channel) for full details.
+
 ## Upgrading from 2.x
 
 If you are upgrading from version 2, be aware that the `NotificationRateLimitReached` event signature has changed, and now includes more information about the notification being skipped. If you have implemented your own version of this event class, you will need to update the constructor signature to accept these additional parameters. No other changes should be required as a part of the upgrade process.
@@ -99,6 +105,56 @@ Update for an individual basis by adding the below to the Notification:
 // Change rate limit to 1 hour
 protected $rateLimitForSeconds = 3600;
 ```
+
+### Rate limiting per channel
+
+As of `4.0.0`, **each delivery channel of a notification is rate limited independently by default** — every channel has its own counter, so reaching the limit on one channel does not suppress the others. (This is a behaviour change in v4; see the [CHANGELOG](CHANGELOG.md) for the rationale and upgrade notes.)
+
+If you prefer the previous behaviour — a single counter covering every channel a notification is delivered on — disable it globally with the `rate_limit_per_channel` config setting, or per notification:
+
+```php
+// Opt this notification out of per-channel rate limiting
+protected $rateLimitPerChannel = false;
+```
+
+Per-channel rate limiting has two parts:
+
+**1. Independent counters — the default.** Each channel is tracked on its own counter, so every channel is delivered the first time and throttled separately thereafter. This is what lets a notification sent to several channels reach all of them rather than just the first. It matters most for **queued** notifications: Laravel queues one job per channel, so before v4 a queued multi-channel notification (sharing one counter) delivered only its first channel and suppressed the rest.
+
+**2. Different limits per channel — optional.** The channel being evaluated is passed to `maxAttempts()` and `rateLimitForSeconds()`, so you can override them to give each channel its own limit. Override only what you need; any channel you don't special-case falls back to the global config:
+
+```php
+// Five broadcasts per minute; every other channel keeps the configured default.
+public function maxAttempts(?string $channel = null): int
+{
+    return $channel === 'broadcast'
+        ? 5
+        : config('laravel-notification-rate-limit.max_attempts');
+}
+
+// One mail per hour, one broadcast per minute, config default for the rest.
+public function rateLimitForSeconds(?string $channel = null): int
+{
+    return match ($channel) {
+        'mail'      => 3600,
+        'broadcast' => 60,
+        default     => config('laravel-notification-rate-limit.rate_limit_seconds'),
+    };
+}
+```
+
+The channel is likewise passed to `rateLimitKey()` as a third argument, so you can build channel-aware cache keys:
+
+```php
+public function rateLimitKey($notification, $notifiable, ?string $channel = null): string
+{
+    // ... your custom key, optionally incorporating $channel ...
+}
+```
+
+The channel is also exposed on the `NotificationRateLimitReached` event (the `$channel` property) and included in the skipped-notification log context. If you disable per-channel limiting (the whole-notification mode), the `$channel` argument to all of these is `null`.
+
+> **Note:** With per-channel limiting each channel is delivered as its own send, so Laravel assigns a distinct notification id per channel. In the whole-notification (opt-out) mode, all channels of a single send share one id. This only matters if you correlate channels by notification id (for example, across `database`-channel rows).
     
 ### Logging skipped notifications
 
