@@ -573,6 +573,42 @@ class RateLimitTest extends TestCase
     }
 
     #[Test]
+    public function per_channel_mode_shares_one_notification_id_across_channels()
+    {
+        Config::set('laravel-notification-rate-limit.rate_limit_per_channel', true);
+
+        $notification = new TestMultiDeliverableNotification();
+        $this->rateLimitChannelManager->send($this->user, $notification);
+
+        // Each channel is delivered separately, but (as with Laravel's own sender)
+        // every channel must see the same notification id, e.g. so a broadcast can
+        // be matched to its database record.
+        $ids = Event::dispatched(NotificationSent::class)
+            ->map(fn ($args) => $args[0]->notification->id)
+            ->unique();
+
+        $this->assertCount(1, $ids);
+        $this->assertNotNull($ids->first());
+
+        // The caller's notification is not mutated, so a later send gets a new id.
+        $this->assertNull($notification->id);
+    }
+
+    #[Test]
+    public function per_channel_mode_preserves_an_existing_notification_id()
+    {
+        Config::set('laravel-notification-rate-limit.rate_limit_per_channel', true);
+
+        // Queued notifications reach sendNow() with their id already assigned.
+        $notification = new TestMultiDeliverableNotification();
+        $notification->id = 'fixed-id';
+        $this->rateLimitChannelManager->sendNow($this->user, $notification);
+
+        Event::assertDispatchedTimes(NotificationSent::class, 2);
+        Event::assertNotDispatched(NotificationSent::class, fn (NotificationSent $e) => $e->notification->id !== 'fixed-id');
+    }
+
+    #[Test]
     public function whole_notification_mode_rate_limits_as_a_whole()
     {
         // Opt out of the per-channel default to exercise the legacy

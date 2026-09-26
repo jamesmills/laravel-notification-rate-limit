@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection as ModelCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Jamesmills\LaravelNotificationRateLimit\Events\NotificationRateLimitReached;
 
 class RateLimitChannelManager extends ChannelManager
@@ -87,11 +88,21 @@ class RateLimitChannelManager extends ChannelManager
                     continue;
                 }
 
+                // Each channel is delivered by a separate sendNow() call, which
+                // would otherwise mint a fresh notification id per channel. Give
+                // every channel the same id, as Laravel does, on a copy so the
+                // caller's instance (and the rate-limit key) remain untouched.
+                $delivery = clone $notification;
+
+                if (! $delivery->id) {
+                    $delivery->id = (string) Str::uuid();
+                }
+
                 foreach ((array) $viaChannels as $channel) {
                     if ($this->rateLimitPermitsSending($notifiable, $notification, $channel)) {
                         // A non-queued send() is equivalent to an immediate
                         // single-channel sendNow(), so both paths deliver here.
-                        parent::sendNow($notifiable, $notification, [$channel]);
+                        parent::sendNow($notifiable, $delivery, [$channel]);
                     }
                 }
 
