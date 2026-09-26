@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-notification-rate-limit` will be documented in this file
 
+## Unreleased
+
+- Fixed: In per-channel mode, a non-queued notification delivered on several channels was given a different notification `id` on each channel. All channels now share one `id`, as with Laravel's own notification sender (e.g. so a `broadcast` notification can be matched to its `database` record).
+- Tested against PHP 8.5; the PHPUnit dev constraint now excludes releases affected by CVE-2026-24765.
+
 ## 4.0.0 - 2026-06-13
 
 - Removed support for Laravel 10.x and 11.x. Both have reached end of security support (Laravel 10 in February 2025, Laravel 11 in March 2026); recent framework security advisories are unpatched on those branches, so they can no longer be installed or tested here. Users who still require Laravel 10 or 11 should pin to `3.3.0`, the last release to support them.
