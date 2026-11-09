@@ -5,6 +5,7 @@ All notable changes to `laravel-notification-rate-limit` will be documented in t
 ## 4.1.0 - (pending)
 
 - Fixed: In per-channel mode, a notification delivered on several channels was given a different notification `id` on each channel. This affected any send that reached the channel manager without an `id` already assigned: non-queued `notify()`/`send()`, and `notifyNow()`/`sendNow()`. (Queued notifications were unaffected, as Laravel assigns their `id` before queueing.) All channels now share one `id`, as with Laravel's own notification sender (e.g. so a `broadcast` notification can be matched to its `database` record).
+- Fixed: Queued notifications were never rate limited when unique-notification mode was enabled (the default). Laravel assigns a UUID to a notification's `id` before queueing, and that id was included in the cache key, so every dispatch produced a unique key. The `id` is now excluded from the key. Keys for non-queued notifications are unchanged. If you set `id` yourself before sending in unique mode, your keys change once on upgrade. (See [issue #53](https://github.com/jamesmills/laravel-notification-rate-limit/issues/53))
 - Tested against PHP 8.5; the PHPUnit dev constraint now excludes releases affected by CVE-2026-24765.
 
 ## 4.0.0 - 2026-06-13
