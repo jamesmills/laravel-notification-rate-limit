@@ -38,7 +38,15 @@ trait RateLimitedNotification
     {
         if ($this->shouldRateLimitUniqueNotifications() == true) {
             $strategy = $this->rateLimitUniqueNotificationStrategy();
-            $serialized_notification = serialize($notification);
+
+            // Laravel assigns a fresh UUID to $notification->id before queueing,
+            // so a queued notification reaches the limiter with an id that differs
+            // on every dispatch. Leave the id out of the fingerprint, otherwise
+            // repeat sends never share a key. A non-queued notification has a
+            // null id here anyway, so its key is unchanged.
+            $fingerprint = clone $notification;
+            $fingerprint->id = null;
+            $serialized_notification = serialize($fingerprint);
 
             if ($strategy == 'serialize') {
                 return [$serialized_notification];

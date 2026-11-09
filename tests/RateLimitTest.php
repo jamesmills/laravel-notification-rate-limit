@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Jamesmills\LaravelNotificationRateLimit\Events\NotificationRateLimitReached;
 use Jamesmills\LaravelNotificationRateLimit\RateLimitChannelManager;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TiMacDonald\Log\LogEntry;
 use TiMacDonald\Log\LogFake;
@@ -606,6 +607,51 @@ class RateLimitTest extends TestCase
 
         Event::assertDispatchedTimes(NotificationSent::class, 2);
         Event::assertNotDispatched(NotificationSent::class, fn (NotificationSent $e) => $e->notification->id !== 'fixed-id');
+    }
+
+    public static function uniqueNotificationModes(): array
+    {
+        return [
+            'unique mode off' => [false, 'serialize'],
+            'unique mode, serialize strategy' => [true, 'serialize'],
+            'unique mode, md5 strategy' => [true, 'md5'],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('uniqueNotificationModes')]
+    public function it_rate_limits_repeated_queued_notifications(bool $uniqueMode, string $strategy)
+    {
+        // Laravel assigns a UUID to $notification->id before queueing. That id
+        // must not take part in the unique-notification fingerprint, or every
+        // queued dispatch gets its own cache key and is never limited (issue #53).
+        Config::set('queue.default', 'sync');
+        Config::set('laravel-notification-rate-limit.should_rate_limit_unique_notifications', $uniqueMode);
+        Config::set('laravel-notification-rate-limit.unique_notification_strategy', $strategy);
+
+        // An anonymous notifiable avoids the queued job rehydrating a User from the database.
+        Notification::route('mail', $this->anonymousEmailAddress)->notify(new TestQueuedNotification());
+        Notification::route('mail', $this->anonymousEmailAddress)->notify(new TestQueuedNotification());
+
+        Event::assertDispatchedTimes(NotificationSent::class, 1);
+        Event::assertDispatchedTimes(NotificationRateLimitReached::class, 1);
+    }
+
+    #[Test]
+    public function unique_notification_key_ignores_the_notification_id()
+    {
+        Config::set('laravel-notification-rate-limit.should_rate_limit_unique_notifications', true);
+        Config::set('laravel-notification-rate-limit.unique_notification_strategy', 'serialize');
+
+        $notification = new TestNotification();
+        $keyWithoutId = $notification->rateLimitKey($notification, $this->user);
+
+        $notification->id = (string) Str::uuid();
+        $keyWithId = $notification->rateLimitKey($notification, $this->user);
+
+        $this->assertSame($keyWithoutId, $keyWithId);
+        // The caller's notification keeps its id; only the fingerprint copy is altered.
+        $this->assertNotNull($notification->id);
     }
 
     #[Test]
