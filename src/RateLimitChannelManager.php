@@ -87,12 +87,18 @@ class RateLimitChannelManager extends ChannelManager
                     continue;
                 }
 
-                foreach ((array) $viaChannels as $channel) {
-                    if ($this->rateLimitPermitsSending($notifiable, $notification, $channel)) {
-                        // A non-queued send() is equivalent to an immediate
-                        // single-channel sendNow(), so both paths deliver here.
-                        parent::sendNow($notifiable, $notification, [$channel]);
-                    }
+                // Check each channel on its own counter, then deliver all permitted
+                // channels in one sendNow() call so Laravel assigns a single
+                // notification id across them, exactly as it does for an unlimited send.
+                $permitted = array_values(array_filter(
+                    (array) $viaChannels,
+                    fn ($channel) => $this->rateLimitPermitsSending($notifiable, $notification, $channel)
+                ));
+
+                if ($permitted) {
+                    // A non-queued send() is equivalent to an immediate
+                    // sendNow(), so both paths deliver here.
+                    parent::sendNow($notifiable, $notification, $permitted);
                 }
 
                 continue;

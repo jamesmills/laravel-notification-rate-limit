@@ -20,7 +20,8 @@ Rate Limiting Notifications in Laravel using Laravel's native rate limiter to av
 | 9.x       | 8.0     | 2.1.0                           | 2023-08-26 |
 | 10.x      | 8.0/8.1 | 2.1.0                           | 2023-08-26 |
 | 10.x-13.x | 8.2-8.4 | 3.3.0                           | 2026-03-22 |
-| 12.x-13.x | 8.2-8.4 | 4.0.0                           | 2026-06-13  |
+| 12.x-13.x | 8.2-8.4 | 4.0.0                           | 2026-06-13 |
+| 12.x-13.x | 8.2-8.5 | 4.1.0                           | (pending)  |
 
 > **Laravel 10 & 11 users:** Laravel 10 (end of security support February 2025) and Laravel 11 (end of security support March 2026) are no longer covered by this package as of `4.0.0`. If you still need Laravel 10 or 11 support, pin to `3.3.0` (`composer require jamesmills/laravel-notification-rate-limit:^3.3`), which is the last release to support them.
 
@@ -154,7 +155,7 @@ public function rateLimitKey($notification, $notifiable, ?string $channel = null
 
 The channel is also exposed on the `NotificationRateLimitReached` event (the `$channel` property) and included in the skipped-notification log context. If you disable per-channel limiting (the whole-notification mode), the `$channel` argument to all of these is `null`.
 
-> **Note:** With per-channel limiting each channel is delivered as its own send, so Laravel assigns a distinct notification id per channel. In the whole-notification (opt-out) mode, all channels of a single send share one id. This only matters if you correlate channels by notification id (for example, across `database`-channel rows).
+> **Note:** In both modes, all channels of a single send share one notification id, as with Laravel's own notification sender. This lets you correlate channels by notification id (for example, matching a `broadcast` notification to its `database`-channel row). Channels that are skipped by the rate limiter simply do not receive that send.
     
 ### Logging skipped notifications
 
