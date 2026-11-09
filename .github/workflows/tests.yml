@@ -20,11 +20,9 @@ jobs:
         include:
           - laravel: 12.*
             testbench: 10.*
-            phpunit: 11.*
             logfake: ^2.4
           - laravel: 13.*
             testbench: 11.*
-            phpunit: 11.*
             logfake: ^2.4
 
     name: P${{ matrix.php }} / L${{ matrix.laravel }}
@@ -42,7 +40,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "phpunit/phpunit:${{ matrix.phpunit }}" "timacdonald/log-fake:${{ matrix.logfake }}" --no-interaction --no-update
+          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "timacdonald/log-fake:${{ matrix.logfake }}" --no-interaction --no-update
           composer update --prefer-stable --prefer-dist --no-interaction
 
       - name: Execute tests
