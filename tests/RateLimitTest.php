@@ -580,7 +580,7 @@ class RateLimitTest extends TestCase
         $notification = new TestMultiDeliverableNotification();
         $this->rateLimitChannelManager->send($this->user, $notification);
 
-        // Each channel is delivered separately, but (as with Laravel's own sender)
+        // Each channel is rate limited separately, but (as with Laravel's own sender)
         // every channel must see the same notification id, e.g. so a broadcast can
         // be matched to its database record.
         $ids = Event::dispatched(NotificationSent::class)

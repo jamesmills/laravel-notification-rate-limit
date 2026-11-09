@@ -4,7 +4,7 @@ All notable changes to `laravel-notification-rate-limit` will be documented in t
 
 ## Unreleased
 
-- Fixed: In per-channel mode, a non-queued notification delivered on several channels was given a different notification `id` on each channel. All channels now share one `id`, as with Laravel's own notification sender (e.g. so a `broadcast` notification can be matched to its `database` record).
+- Fixed: In per-channel mode, a notification delivered on several channels was given a different notification `id` on each channel. This affected any send that reached the channel manager without an `id` already assigned: non-queued `notify()`/`send()`, and `notifyNow()`/`sendNow()`. (Queued notifications were unaffected, as Laravel assigns their `id` before queueing.) All channels now share one `id`, as with Laravel's own notification sender (e.g. so a `broadcast` notification can be matched to its `database` record).
 - Tested against PHP 8.5; the PHPUnit dev constraint now excludes releases affected by CVE-2026-24765.
 
 ## 4.0.0 - 2026-06-13

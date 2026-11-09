@@ -154,7 +154,7 @@ public function rateLimitKey($notification, $notifiable, ?string $channel = null
 
 The channel is also exposed on the `NotificationRateLimitReached` event (the `$channel` property) and included in the skipped-notification log context. If you disable per-channel limiting (the whole-notification mode), the `$channel` argument to all of these is `null`.
 
-> **Note:** With per-channel limiting each channel is delivered as its own send, so Laravel assigns a distinct notification id per channel. In the whole-notification (opt-out) mode, all channels of a single send share one id. This only matters if you correlate channels by notification id (for example, across `database`-channel rows).
+> **Note:** In both modes, all channels of a single send share one notification id, as with Laravel's own notification sender. This lets you correlate channels by notification id (for example, matching a `broadcast` notification to its `database`-channel row). Channels that are skipped by the rate limiter simply do not receive that send.
     
 ### Logging skipped notifications
 
